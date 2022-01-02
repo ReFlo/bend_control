@@ -13,6 +13,17 @@ from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets")
 
+# Stopoffsets 
+OFFSET_1 = 0
+OFFSET_2 = 200
+OFFSET_3 = 480
+OFFSET_4 = 800
+
+
+str_angle = str()
+set_angle = float()
+stop_offset = float()
+
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
@@ -23,6 +34,51 @@ window = Tk()
 window.geometry("1440x1024")
 window.configure(bg = "#FFFFFF")
 
+def add_digit_to_angle(value):
+    global str_angle
+
+    if value == 'C':
+        str_angle = str()
+        canvas.itemconfig(set_angle, text=str_angle+'°')
+        return
+
+    if value == 'Enter':
+        change_angle(str_angle)
+        str_angle = str()
+        return
+
+    str_angle = str_angle + value
+    canvas.itemconfig(set_angle, text=str_angle+'°')
+
+
+def change_angle(angle):
+    global fl_angle
+    try:
+        result = eval(angle)
+        print(result)
+        canvas.itemconfig(set_angle, text=result+'°')
+        fl_angle = float(result)
+
+
+    except Exception as e:
+        print(e)
+        canvas.itemconfig(set_angle, text='Error')
+
+def change_stop_offset(value):
+    global stop_offset
+
+    if value == 1:
+        stop_offset = OFFSET_1
+    if value == 2:
+        stop_offset = OFFSET_2
+    if value == 3:
+        stop_offset = OFFSET_3
+    if value == 4:
+        stop_offset = OFFSET_4
+    print(str.join("Aktueller Anschlagoffset :", stop_offset))
+    return
+
+#--------------- create GUI items ------------------
 
 canvas = Canvas(
     window,
@@ -137,7 +193,7 @@ button_7 = Button(
     image=button_image_7,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_7 clicked"),
+    command=lambda: add_digit_to_angle('Enter'),
     relief="flat"
 )
 button_7.place(
@@ -153,7 +209,7 @@ button_8 = Button(
     image=button_image_8,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_8 clicked"),
+    command=lambda: add_digit_to_angle('0'),
     relief="flat"
 )
 button_8.place(
@@ -169,7 +225,7 @@ button_9 = Button(
     image=button_image_9,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_9 clicked"),
+    command=lambda: add_digit_to_angle('.'),
     relief="flat"
 )
 button_9.place(
@@ -185,7 +241,7 @@ button_10 = Button(
     image=button_image_10,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_10 clicked"),
+    command=lambda: add_digit_to_angle('C'),
     relief="flat"
 )
 button_10.place(
@@ -201,7 +257,7 @@ button_11 = Button(
     image=button_image_11,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_11 clicked"),
+    command=lambda: add_digit_to_angle('7'),
     relief="flat"
 )
 button_11.place(
@@ -217,7 +273,7 @@ button_12 = Button(
     image=button_image_12,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_12 clicked"),
+    command=lambda: add_digit_to_angle('7'),
     relief="flat"
 )
 button_12.place(
@@ -233,7 +289,7 @@ button_13 = Button(
     image=button_image_13,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_13 clicked"),
+    command=lambda: add_digit_to_angle('8'),
     relief="flat"
 )
 button_13.place(
@@ -249,7 +305,7 @@ button_14 = Button(
     image=button_image_14,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_14 clicked"),
+    command=lambda: add_digit_to_angle('4'),
     relief="flat"
 )
 button_14.place(
@@ -265,7 +321,7 @@ button_15 = Button(
     image=button_image_15,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_15 clicked"),
+    command=lambda: add_digit_to_angle('5'),
     relief="flat"
 )
 button_15.place(
@@ -281,7 +337,7 @@ button_16 = Button(
     image=button_image_16,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_16 clicked"),
+    command=lambda: add_digit_to_angle('6'),
     relief="flat"
 )
 button_16.place(
@@ -297,7 +353,7 @@ button_17 = Button(
     image=button_image_17,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_17 clicked"),
+    command=lambda: add_digit_to_angle('3'),
     relief="flat"
 )
 button_17.place(
@@ -313,7 +369,7 @@ button_18 = Button(
     image=button_image_18,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_18 clicked"),
+    command=lambda: add_digit_to_angle('2'),
     relief="flat"
 )
 button_18.place(
@@ -329,7 +385,7 @@ button_19 = Button(
     image=button_image_19,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_19 clicked"),
+    command=lambda: add_digit_to_angle('1'),
     relief="flat"
 )
 button_19.place(
@@ -347,11 +403,11 @@ canvas.create_rectangle(
     fill="#C4C4C4",
     outline="")
 
-shall_angle=canvas.create_text(
+leng_stop=canvas.create_text(
     610.0,
     494.0,
     anchor="center",
-    text="90",
+    text="90 mm",
     fill="#000000",
     font=("Roboto", 72 * -1)
 )
@@ -373,7 +429,7 @@ canvas.create_rectangle(
     fill="#C4C4C4",
     outline="")
 
-canvas.create_text(
+current_angle=canvas.create_text(
     610.0,
     326.0,
     anchor="center",
@@ -399,7 +455,7 @@ canvas.create_rectangle(
     fill="#C4C4C4",
     outline="")
 
-canvas.create_text(
+set_angle =canvas.create_text(
     610.0,
     160.0,
     anchor="center",
@@ -416,5 +472,8 @@ canvas.create_text(
     fill="#000000",
     font=("Roboto", 72 * -1)
 )
-window.resizable(False, False)
+
+# -------------------- Start Mainloop --------------------
+
+window.resizable(True, True)
 window.mainloop()
