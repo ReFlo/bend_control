@@ -66,6 +66,11 @@ def change_angle(angle):
         canvas.itemconfig(set_angle, text='Error')
 
 def change_selected_button(button):
+    button_3["bg"]="white"
+    button_4["bg"]="white"
+    button_5["bg"]="white"
+    button_6["bg"]="white"
+    button["bg"]="grey"
     return
 
 def change_stop_offset(value):
@@ -76,10 +81,13 @@ def change_stop_offset(value):
         change_selected_button(button_6)
     elif value == 2:
         stop_offset = OFFSET_2
+        change_selected_button(button_5)
     elif value == 3:
         stop_offset = OFFSET_3
+        change_selected_button(button_4)
     elif value == 4:
         stop_offset = OFFSET_4
+        change_selected_button(button_3)
     str_offset= str(stop_offset)
     print(''.join(["Aktueller Anschlagoffset: ",str_offset]))
     display_leng_stop()
@@ -137,38 +145,43 @@ button_2.place(
 button_image_3 = PhotoImage(
     file=relative_to_assets("button_3.png"))
 button_3 = Button(
+    bg = "#FFFFFF",
     image=button_image_3,
     borderwidth=0,
     highlightthickness=0,
     command=lambda: change_stop_offset(4),
-    relief="flat"
+    relief="flat",
 )
 button_3.place(
-    x=724.0,
-    y=610.0,
-    width=100.0,
-    height=100.0
+    x=714.0,
+    y=600.0,
+    width=120.0,
+    height=120.0
 )
+
 
 button_image_4 = PhotoImage(
     file=relative_to_assets("button_4.png"))
 button_4 = Button(
+    bg = "#FFFFFF",
     image=button_image_4,
     borderwidth=0,
     highlightthickness=0,
     command=lambda: change_stop_offset(3),
-    relief="flat"
+    relief="flat",
+
 )
 button_4.place(
-    x=501.0,
-    y=610.0,
-    width=100.0,
-    height=100.0
+    x=491.0,
+    y=600.0,
+    width=120.0,
+    height=120.0
 )
 
 button_image_5 = PhotoImage(
     file=relative_to_assets("button_5.png"))
 button_5 = Button(
+    bg = "#FFFFFF",
     image=button_image_5,
     borderwidth=0,
     highlightthickness=0,
@@ -176,15 +189,16 @@ button_5 = Button(
     relief="flat"
 )
 button_5.place(
-    x=278.0,
-    y=610.0,
-    width=100.0,
-    height=100.0
+    x=268.0,
+    y=600.0,
+    width=120.0,
+    height=120.0
 )
 
 button_image_6 = PhotoImage(
     file=relative_to_assets("button_6.png"))
 button_6 = Button(
+    bg = "grey",
     image=button_image_6,
     borderwidth=0,
     highlightthickness=0,
@@ -192,10 +206,10 @@ button_6 = Button(
     relief="flat"
 )
 button_6.place(
-    x=55.0,
-    y=610.0,
-    width=100.0,
-    height=100.0
+    x=45.0,
+    y=600.0,
+    width=120.0,
+    height=120.0
 )
 
 button_image_7 = PhotoImage(
