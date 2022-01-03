@@ -7,6 +7,7 @@ import threading
 import queue
 import time
 from pathlib import Path
+from RPi.GPIO as GPIO
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
@@ -18,11 +19,15 @@ from tkinter.constants import DISABLED
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets")
 
-# Stop offsets 
+# Stop offsets 1
 OFFSET_1 = 0
 OFFSET_2 = 200
 OFFSET_3 = 480
 OFFSET_4 = 800
+
+PIN_UP = 38
+PIN_DOWN = 40
+
 
 
 class GUI():
@@ -37,6 +42,9 @@ class GUI():
         self.window = parent    
         self.config.read('Settings.INI')
         self.running = True
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(PIN_UP, GPIO.OUT)
+        GPIO.setup(PIN_DOWN, GPIO.OUT)
         # self.fl_set_angle = float(config['DEFAULT']['SetAngle'])
 
         #--------------- create GUI items ------------------
@@ -514,22 +522,27 @@ class GUI():
 
             while(self.fl_current_angle < set_angle and self.running==True):
                     print("Moving up")
+                    GPIO.output(PIN_UP,1)
                     time.sleep(1)
                     self.fl_current_angle =300.0
-
+            GPIO.output(PIN_UP,0)
+            
             while(self.fl_current_angle > 0 and self.running==True):
                     print("Moving down")
+                    GPIO.output(PIN_DOWN,1)
                     time.sleep(1)
                     self.fl_current_angle = 0.0
+                    GPIO.output(PIN_DOWN,1)
             self.running = False
             self.button_2["state"] = "normal"
             return
         self.button_2["state"] = "normal"
         return
 
-
     def stop_bending(self):
         self.running = False
+        GPIO.output(PIN_UP,0)
+        GPIO.output(PIN_DOWN,0)
         print("Bending is stopped")
 
 
