@@ -24,8 +24,6 @@ OFFSET_2 = 200
 OFFSET_3 = 480
 OFFSET_4 = 800
 
-fl_current_angle = float()
-running = False
 
 class GUI():
 
@@ -34,10 +32,12 @@ class GUI():
         self.stop_offset = float()
         self.stop_value = float()
         self.fl_set_angle = float()
+        self.fl_current_angle = float()
         self.config = configparser.ConfigParser()
         self.window = parent    
         self.config.read('Settings.INI')
-        # set_angle = float(config['DEFAULT']['SetAngle'])
+        self.running = True
+        # self.fl_set_angle = float(config['DEFAULT']['SetAngle'])
 
         #--------------- create GUI items ------------------
 
@@ -58,7 +58,7 @@ class GUI():
             image=self.button_image_1,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: stop_bending(),
+            command=lambda: self.stop_bending(),
             relief="flat"
         )
         self.button_1.place(
@@ -504,34 +504,33 @@ class GUI():
         self.canvas.itemconfig(self.leng_stop, text=''.join([str(self.stop_value + self.stop_offset),' mm']))
 
     def start_bending(self):
-        global running
-        running = True
-        threading.Thread(target=bend,args=[self.fl_set_angle]).start()
-        self.button_2["status"]="disabled"
+        self.running = True
+        threading.Thread(target=self.bend,args=[self.fl_set_angle]).start()
+        self.button_2["state"] = "disabled"
         return
 
-def bend(set_angle):
-    global fl_current_angle,running
+    def bend(self, set_angle):
+        while self.running == True :
 
-    while running == True :
+            while(self.fl_current_angle < set_angle and self.running==True):
+                    print("Moving up")
+                    time.sleep(1)
+                    self.fl_current_angle =300.0
 
-        while(fl_current_angle < set_angle and running==True):
-                print("Moving up")
-                time.sleep(1)
-                fl_current_angle = 300.0
-
-        while(fl_current_angle > 0 and running==True):
-                print("Moving down")
-                time.sleep(1)
-                fl_current_angle = 0.0
+            while(self.fl_current_angle > 0 and self.running==True):
+                    print("Moving down")
+                    time.sleep(1)
+                    self.fl_current_angle = 0.0
+            self.running = False
+            self.button_2["state"] = "normal"
+            return
+        self.button_2["state"] = "normal"
         return
-    return
 
 
-def stop_bending():
-    global running
-    running = False
-    print("Bending is stopped")
+    def stop_bending(self):
+        self.running = False
+        print("Bending is stopped")
 
 
 # -------------------- Start Mainloop --------------------
