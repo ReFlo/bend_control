@@ -7,7 +7,7 @@ import threading
 import queue
 import time
 from pathlib import Path
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
@@ -42,9 +42,9 @@ class GUI():
         self.window = parent    
         self.config.read('Settings.INI')
         self.running = True
-        # GPIO.setmode(GPIO.BOARD)
-        # GPIO.setup(PIN_UP, GPIO.OUT)
-        # GPIO.setup(PIN_DOWN, GPIO.OUT)
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(PIN_UP, GPIO.OUT)
+        GPIO.setup(PIN_DOWN, GPIO.OUT)
         # self.fl_set_angle = float(config['DEFAULT']['SetAngle'])
 
         #--------------- create GUI items ------------------
@@ -380,7 +380,7 @@ class GUI():
             601.0,
             405.0,
             anchor="center",
-            text="0.0 mm",
+            text="0.0",
             fill="#000000",
             font=("Roboto", 64 * -1)
         )
@@ -507,7 +507,7 @@ class GUI():
         return
 
     def display_leng_stop(self):
-        self.canvas.itemconfig(self.leng_stop, text=''.join([str(self.stop_value + self.stop_offset),' mm']))
+        self.canvas.itemconfig(self.leng_stop, text=str(self.stop_value + self.stop_offset))
 
     def start_bending(self):
         self.running = True
@@ -520,17 +520,17 @@ class GUI():
 
             while(self.fl_current_angle < set_angle and self.running==True):
                     print("Moving up")
-                    # GPIO.output(PIN_UP,1)
+                    GPIO.output(PIN_UP,1)
                     time.sleep(1)
                     self.fl_current_angle =300.0
-            # GPIO.output(PIN_UP,0)
+            GPIO.output(PIN_UP,0)
 
             while(self.fl_current_angle > 0 and self.running==True):
                     print("Moving down")
-                    # GPIO.output(PIN_DOWN,1)
+                    GPIO.output(PIN_DOWN,1)
                     time.sleep(1)
                     self.fl_current_angle = 0.0
-                    # GPIO.output(PIN_DOWN,1)
+            GPIO.output(PIN_DOWN,0)
             self.running = False
             self.button_2["state"] = "normal"
             return
@@ -539,8 +539,8 @@ class GUI():
 
     def stop_bending(self):
         self.running = False
-        # GPIO.output(PIN_UP,0)
-        # GPIO.output(PIN_DOWN,0)
+        GPIO.output(PIN_UP,0)
+        GPIO.output(PIN_DOWN,0)
         print("Bending is stopped")
 
 
@@ -550,7 +550,7 @@ class GUI():
 
 if __name__ == "__main__":
     window = Tk()
-    window.attributes("-fullscreen", True) 
+#     window.attributes("-fullscreen", True) 
     window.geometry("1280x800")
     window.configure(bg = "#FFFFFF")
     window.resizable(True, True)
