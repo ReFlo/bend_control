@@ -7,7 +7,7 @@ import threading
 import queue
 import time
 from pathlib import Path
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
