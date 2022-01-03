@@ -7,7 +7,7 @@ import threading
 import queue
 import time
 from pathlib import Path
-from RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
@@ -42,9 +42,9 @@ class GUI():
         self.window = parent    
         self.config.read('Settings.INI')
         self.running = True
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(PIN_UP, GPIO.OUT)
-        GPIO.setup(PIN_DOWN, GPIO.OUT)
+        # GPIO.setmode(GPIO.BOARD)
+        # GPIO.setup(PIN_UP, GPIO.OUT)
+        # GPIO.setup(PIN_DOWN, GPIO.OUT)
         # self.fl_set_angle = float(config['DEFAULT']['SetAngle'])
 
         #--------------- create GUI items ------------------
@@ -52,8 +52,8 @@ class GUI():
         self.canvas = Canvas(
             self.window,
             bg = "#FFFFFF",
-            height = 1024,
-            width = 1440,
+            height = 800,
+            width = 1280,
             bd = 0,
             highlightthickness = 0,
             relief = "ridge"
@@ -70,10 +70,10 @@ class GUI():
             relief="flat"
         )
         self.button_1.place(
-            x=501.0,
-            y=751.0,
-            width=323.0,
-            height=140.0
+            x=484.0,
+            y=645.0,
+            width=265.0,
+            height=100.0
         )
 
         self.button_image_2 = PhotoImage(
@@ -86,10 +86,10 @@ class GUI():
             relief="flat"
         )
         self.button_2.place(
-            x=55.0,
-            y=751.0,
-            width=323.0,
-            height=140.0
+            x=114.0,
+            y=645.0,
+            width=265.0,
+            height=100.0
         )
 
         self.button_image_3 = PhotoImage(
@@ -103,10 +103,10 @@ class GUI():
             relief="flat",
         )
         self.button_3.place(
-            x=714.0,
-            y=600.0,
-            width=120.0,
-            height=120.0
+            x=644.0,
+            y=495.0,
+            width=100.0,
+            height=100.0
         )
 
 
@@ -122,11 +122,12 @@ class GUI():
 
         )
         self.button_4.place(
-            x=491.0,
-            y=600.0,
-            width=120.0,
-            height=120.0
+            x=484.0,
+            y=495.0,
+            width=100.0,
+            height=100.0
         )
+
 
         self.button_image_5 = PhotoImage(
             file=self.relative_to_assets("button_5.png"))
@@ -139,10 +140,10 @@ class GUI():
             relief="flat"
         )
         self.button_5.place(
-            x=268.0,
-            y=600.0,
-            width=120.0,
-            height=120.0
+            x=284.0,
+            y=495.0,
+            width=100.0,
+            height=100.0
         )
 
         self.button_image_6 = PhotoImage(
@@ -156,10 +157,10 @@ class GUI():
             relief="flat"
         )
         self.button_6.place(
-            x=45.0,
-            y=600.0,
-            width=120.0,
-            height=120.0
+            x=114.0,
+            y=495.0,
+            width=100.0,
+            height=100.0
         )
 
         self.button_image_7 = PhotoImage(
@@ -172,10 +173,10 @@ class GUI():
             relief="flat"
         )
         self.button_7.place(
-            x=907.0,
-            y=751.0,
-            width=474.0,
-            height=140.0
+            x=791.0,
+            y=645.0,
+            width=380.0,
+            height=100.0
         )
 
         self.button_image_8 = PhotoImage(
@@ -188,10 +189,10 @@ class GUI():
             relief="flat"
         )
         self.button_8.place(
-            x=907.0,
-            y=590.0,
-            width=140.0,
-            height=140.0
+            x=791.0,
+            y=495.0,
+            width=100.0,
+            height=100.0
         )
 
         self.button_image_9 = PhotoImage(
@@ -204,12 +205,11 @@ class GUI():
             relief="flat"
         )
         self.button_9.place(
-            x=1074.0,
-            y=590.0,
-            width=140.0,
-            height=140.0
+            x=931.0,
+            y=495.0,
+            width=100.0,
+            height=100.0
         )
-
         self.button_image_10 = PhotoImage(
             file=self.relative_to_assets("button_10.png"))
         self.button_10 = Button(
@@ -220,10 +220,10 @@ class GUI():
             relief="flat"
         )
         self.button_10.place(
-            x=1241.0,
-            y=590.0,
-            width=140.0,
-            height=140.0
+            x=1071.0,
+            y=495.0,
+            width=100.0,
+            height=100.0
         )
 
         self.button_image_11 = PhotoImage(
@@ -236,10 +236,10 @@ class GUI():
             relief="flat"
         )
         self.button_11.place(
-            x=907.0,
-            y=424.0,
-            width=140.0,
-            height=140.0
+            x=791.0,
+            y=355.0,
+            width=100.0,
+            height=100.0
         )
 
         self.button_image_12 = PhotoImage(
@@ -252,10 +252,10 @@ class GUI():
             relief="flat"
         )
         self.button_12.place(
-            x=1074.0,
-            y=424.0,
-            width=140.0,
-            height=140.0
+            x=931.0,
+            y=355.0,
+            width=100.0,
+            height=100.0
         )
 
         self.button_image_13 = PhotoImage(
@@ -268,10 +268,10 @@ class GUI():
             relief="flat"
         )
         self.button_13.place(
-            x=1241.0,
-            y=424.0,
-            width=140.0,
-            height=140.0
+            x=1071.0,
+            y=355.0,
+            width=100.0,
+            height=100.0
         )
 
         self.button_image_14 = PhotoImage(
@@ -284,10 +284,10 @@ class GUI():
             relief="flat"
         )
         self.button_14.place(
-            x=907.0,
-            y=257.0,
-            width=140.0,
-            height=140.0
+            x=791.0,
+            y=215.0,
+            width=100.0,
+            height=100.0
         )
 
         self.button_image_15 = PhotoImage(
@@ -300,10 +300,10 @@ class GUI():
             relief="flat"
         )
         self.button_15.place(
-            x=1074.0,
-            y=257.0,
-            width=140.0,
-            height=140.0
+            x=931.0,
+            y=215.0,
+            width=100.0,
+            height=100.0
         )
 
         self.button_image_16 = PhotoImage(
@@ -316,12 +316,11 @@ class GUI():
             relief="flat"
         )
         self.button_16.place(
-            x=1241.0,
-            y=257.0,
-            width=140.0,
-            height=140.0
+            x=1071.0,
+            y=215.0,
+            width=100.0,
+            height=100.0
         )
-
         self.button_image_17 = PhotoImage(
             file=self.relative_to_assets("button_17.png"))
         self.button_17 = Button(
@@ -332,12 +331,11 @@ class GUI():
             relief="flat"
         )
         self.button_17.place(
-            x=1241.0,
-            y=90.0,
-            width=140.0,
-            height=140.0
+            x=1071.0,
+            y=75.0,
+            width=100.0,
+            height=100.0
         )
-
         self.button_image_18 = PhotoImage(
             file=self.relative_to_assets("button_18.png"))
         self.button_18 = Button(
@@ -348,10 +346,10 @@ class GUI():
             relief="flat"
         )
         self.button_18.place(
-            x=1074.0,
-            y=90.0,
-            width=140.0,
-            height=140.0
+            x=931.0,
+            y=75.0,
+            width=100.0,
+            height=100.0
         )
 
         self.button_image_19 = PhotoImage(
@@ -364,88 +362,88 @@ class GUI():
             relief="flat"
         )
         self.button_19.place(
-            x=907.0,
-            y=90.0,
-            width=140.0,
-            height=140.0
+            x=791.0,
+            y=75.0,
+            width=100.0,
+            height=100.0
         )
 
         self.canvas.create_rectangle(
-            396.0,
-            423.0,
-            824.0,
-            563.0,
+            451.0,
+            355.0,
+            751.0,
+            455.0,
             fill="#C4C4C4",
             outline="")
 
         self.leng_stop = self.canvas.create_text(
-            610.0,
-            494.0,
+            601.0,
+            405.0,
             anchor="center",
             text="0.0 mm",
             fill="#000000",
-            font=("Roboto", 72 * -1)
+            font=("Roboto", 64 * -1)
         )
 
         self.canvas.create_text(
-            55.0,
-            494.0,
+            114.0,
+            405.0,
             anchor="w",
             text="Anschlag:",
             fill="#000000",
-            font=("Roboto", 72 * -1)
+            font=("Roboto", 64 * -1)
         )
 
         self.canvas.create_rectangle(
-            396.0,
-            256.0,
-            824.0,
-            396.0,
+            451.0,
+            215.0,
+            751.0,
+            315.0,
             fill="#C4C4C4",
             outline="")
 
         self.current_angle = self.canvas.create_text(
-            610.0,
-            326.0,
+            601.0,
+            265.0,
             anchor="center",
             text="90°",
             fill="#000000",
-            font=("Roboto", 72 * -1)
+            font=("Roboto", 64 * -1)
         )
 
         self.canvas.create_text(
-            55.0,
-            327.0,
+            114.0,
+            265.0,
             anchor="w",
             text="Ist:",
             fill="#000000",
-            font=("Roboto", 72 * -1)
+            font=("Roboto", 64 * -1)
         )
 
         self.canvas.create_rectangle(
-            396.0,
-            90.0,
-            824.0,
-            230.0,
+            451.0,
+            75.0,
+            751.0,
+            175.0,
             fill="#C4C4C4",
             outline="")
 
         self.set_angle = self.canvas.create_text(
-            610.0,
-            160.0,
+            601.0,
+            125.0,
             anchor="center",
             text="0°",
             fill="#000000",
-            font=("Roboto", 72 * -1)
+            font=("Roboto", 64 * -1)
         )
 
         self.canvas.create_text(
-            55.0,
-            160.0,
+            109.0,
+            125.0,
             anchor="w",
             text="Soll:",
             fill="#000000",
-            font=("Roboto", 72 * -1)
+            font=("Roboto", 64 * -1)
         )
 
     def relative_to_assets(self, path: str) -> Path:
@@ -522,17 +520,17 @@ class GUI():
 
             while(self.fl_current_angle < set_angle and self.running==True):
                     print("Moving up")
-                    GPIO.output(PIN_UP,1)
+                    # GPIO.output(PIN_UP,1)
                     time.sleep(1)
                     self.fl_current_angle =300.0
-            GPIO.output(PIN_UP,0)
-            
+            # GPIO.output(PIN_UP,0)
+
             while(self.fl_current_angle > 0 and self.running==True):
                     print("Moving down")
-                    GPIO.output(PIN_DOWN,1)
+                    # GPIO.output(PIN_DOWN,1)
                     time.sleep(1)
                     self.fl_current_angle = 0.0
-                    GPIO.output(PIN_DOWN,1)
+                    # GPIO.output(PIN_DOWN,1)
             self.running = False
             self.button_2["state"] = "normal"
             return
@@ -541,8 +539,8 @@ class GUI():
 
     def stop_bending(self):
         self.running = False
-        GPIO.output(PIN_UP,0)
-        GPIO.output(PIN_DOWN,0)
+        # GPIO.output(PIN_UP,0)
+        # GPIO.output(PIN_DOWN,0)
         print("Bending is stopped")
 
 
@@ -552,7 +550,7 @@ class GUI():
 
 if __name__ == "__main__":
     window = Tk()
-    window.geometry("1440x1024")
+    window.geometry("1280x800")
     window.configure(bg = "#FFFFFF")
     window.resizable(True, True)
     gui = GUI(window)

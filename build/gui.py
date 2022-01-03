@@ -20,15 +20,15 @@ def relative_to_assets(path: str) -> Path:
 
 window = Tk()
 
-window.geometry("1440x1024")
+window.geometry("1280x800")
 window.configure(bg = "#FFFFFF")
 
 
 canvas = Canvas(
     window,
     bg = "#FFFFFF",
-    height = 1024,
-    width = 1440,
+    height = 800,
+    width = 1280,
     bd = 0,
     highlightthickness = 0,
     relief = "ridge"
@@ -45,10 +45,10 @@ button_1 = Button(
     relief="flat"
 )
 button_1.place(
-    x=501.0,
-    y=751.0,
-    width=323.0,
-    height=140.0
+    x=484.0,
+    y=645.0,
+    width=265.0,
+    height=100.0
 )
 
 button_image_2 = PhotoImage(
@@ -61,10 +61,10 @@ button_2 = Button(
     relief="flat"
 )
 button_2.place(
-    x=55.0,
-    y=751.0,
-    width=323.0,
-    height=140.0
+    x=114.0,
+    y=645.0,
+    width=265.0,
+    height=100.0
 )
 
 button_image_3 = PhotoImage(
@@ -77,10 +77,10 @@ button_3 = Button(
     relief="flat"
 )
 button_3.place(
-    x=724.0,
-    y=610.0,
-    width=100.0,
-    height=100.0
+    x=644.0,
+    y=510.0,
+    width=80.0,
+    height=80.0
 )
 
 button_image_4 = PhotoImage(
@@ -93,10 +93,10 @@ button_4 = Button(
     relief="flat"
 )
 button_4.place(
-    x=501.0,
-    y=610.0,
-    width=100.0,
-    height=100.0
+    x=474.0,
+    y=510.0,
+    width=80.0,
+    height=80.0
 )
 
 button_image_5 = PhotoImage(
@@ -109,10 +109,10 @@ button_5 = Button(
     relief="flat"
 )
 button_5.place(
-    x=278.0,
-    y=610.0,
-    width=100.0,
-    height=100.0
+    x=304.0,
+    y=510.0,
+    width=80.0,
+    height=80.0
 )
 
 button_image_6 = PhotoImage(
@@ -125,10 +125,10 @@ button_6 = Button(
     relief="flat"
 )
 button_6.place(
-    x=55.0,
-    y=610.0,
-    width=100.0,
-    height=100.0
+    x=134.0,
+    y=510.0,
+    width=80.0,
+    height=80.0
 )
 
 button_image_7 = PhotoImage(
@@ -141,10 +141,10 @@ button_7 = Button(
     relief="flat"
 )
 button_7.place(
-    x=907.0,
-    y=751.0,
-    width=474.0,
-    height=140.0
+    x=791.0,
+    y=645.0,
+    width=380.0,
+    height=100.0
 )
 
 button_image_8 = PhotoImage(
@@ -157,10 +157,10 @@ button_8 = Button(
     relief="flat"
 )
 button_8.place(
-    x=907.0,
-    y=590.0,
-    width=140.0,
-    height=140.0
+    x=791.0,
+    y=495.0,
+    width=100.0,
+    height=100.0
 )
 
 button_image_9 = PhotoImage(
@@ -173,10 +173,10 @@ button_9 = Button(
     relief="flat"
 )
 button_9.place(
-    x=1074.0,
-    y=590.0,
-    width=140.0,
-    height=140.0
+    x=931.0,
+    y=495.0,
+    width=100.0,
+    height=100.0
 )
 
 button_image_10 = PhotoImage(
@@ -189,10 +189,10 @@ button_10 = Button(
     relief="flat"
 )
 button_10.place(
-    x=1241.0,
-    y=590.0,
-    width=140.0,
-    height=140.0
+    x=1071.0,
+    y=495.0,
+    width=100.0,
+    height=100.0
 )
 
 button_image_11 = PhotoImage(
@@ -205,10 +205,10 @@ button_11 = Button(
     relief="flat"
 )
 button_11.place(
-    x=907.0,
-    y=424.0,
-    width=140.0,
-    height=140.0
+    x=791.0,
+    y=355.0,
+    width=100.0,
+    height=100.0
 )
 
 button_image_12 = PhotoImage(
@@ -221,10 +221,10 @@ button_12 = Button(
     relief="flat"
 )
 button_12.place(
-    x=1074.0,
-    y=424.0,
-    width=140.0,
-    height=140.0
+    x=931.0,
+    y=355.0,
+    width=100.0,
+    height=100.0
 )
 
 button_image_13 = PhotoImage(
@@ -237,10 +237,10 @@ button_13 = Button(
     relief="flat"
 )
 button_13.place(
-    x=1241.0,
-    y=424.0,
-    width=140.0,
-    height=140.0
+    x=1071.0,
+    y=355.0,
+    width=100.0,
+    height=100.0
 )
 
 button_image_14 = PhotoImage(
@@ -253,10 +253,10 @@ button_14 = Button(
     relief="flat"
 )
 button_14.place(
-    x=907.0,
-    y=257.0,
-    width=140.0,
-    height=140.0
+    x=791.0,
+    y=215.0,
+    width=100.0,
+    height=100.0
 )
 
 button_image_15 = PhotoImage(
@@ -269,10 +269,10 @@ button_15 = Button(
     relief="flat"
 )
 button_15.place(
-    x=1074.0,
-    y=257.0,
-    width=140.0,
-    height=140.0
+    x=931.0,
+    y=215.0,
+    width=100.0,
+    height=100.0
 )
 
 button_image_16 = PhotoImage(
@@ -285,10 +285,10 @@ button_16 = Button(
     relief="flat"
 )
 button_16.place(
-    x=1241.0,
-    y=257.0,
-    width=140.0,
-    height=140.0
+    x=1071.0,
+    y=215.0,
+    width=100.0,
+    height=100.0
 )
 
 button_image_17 = PhotoImage(
@@ -301,10 +301,10 @@ button_17 = Button(
     relief="flat"
 )
 button_17.place(
-    x=1241.0,
-    y=90.0,
-    width=140.0,
-    height=140.0
+    x=1071.0,
+    y=75.0,
+    width=100.0,
+    height=100.0
 )
 
 button_image_18 = PhotoImage(
@@ -317,10 +317,10 @@ button_18 = Button(
     relief="flat"
 )
 button_18.place(
-    x=1074.0,
-    y=90.0,
-    width=140.0,
-    height=140.0
+    x=931.0,
+    y=75.0,
+    width=100.0,
+    height=100.0
 )
 
 button_image_19 = PhotoImage(
@@ -333,88 +333,88 @@ button_19 = Button(
     relief="flat"
 )
 button_19.place(
-    x=907.0,
-    y=90.0,
-    width=140.0,
-    height=140.0
+    x=791.0,
+    y=75.0,
+    width=100.0,
+    height=100.0
 )
 
 canvas.create_rectangle(
-    396.0,
-    423.0,
-    824.0,
-    563.0,
+    451.0,
+    355.0,
+    751.0,
+    455.0,
     fill="#C4C4C4",
     outline="")
 
-shall_angle=canvas.create_text(
-    610.0,
-    494.0,
-    anchor="center",
+canvas.create_text(
+    451.0,
+    355.0,
+    anchor="nw",
     text="90",
     fill="#000000",
     font=("Roboto", 72 * -1)
 )
 
 canvas.create_text(
-    55.0,
-    494.0,
-    anchor="w",
+    114.0,
+    335.0,
+    anchor="nw",
     text="Anschlag:",
     fill="#000000",
-    font=("Roboto", 72 * -1)
+    font=("Roboto", 64 * -1)
 )
 
 canvas.create_rectangle(
-    396.0,
-    256.0,
-    824.0,
-    396.0,
+    451.0,
+    215.0,
+    751.0,
+    315.0,
     fill="#C4C4C4",
     outline="")
 
 canvas.create_text(
-    610.0,
-    326.0,
-    anchor="center",
-    text="90°",
+    451.0,
+    215.0,
+    anchor="nw",
+    text="90",
     fill="#000000",
     font=("Roboto", 72 * -1)
 )
 
 canvas.create_text(
-    55.0,
-    327.0,
-    anchor="w",
+    114.0,
+    195.0,
+    anchor="nw",
     text="Ist:",
     fill="#000000",
-    font=("Roboto", 72 * -1)
+    font=("Roboto", 64 * -1)
 )
 
 canvas.create_rectangle(
-    396.0,
-    90.0,
-    824.0,
-    230.0,
+    451.0,
+    75.0,
+    751.0,
+    175.0,
     fill="#C4C4C4",
     outline="")
 
 canvas.create_text(
-    610.0,
-    160.0,
-    anchor="center",
-    text="90°",
+    451.0,
+    75.0,
+    anchor="nw",
+    text="90",
     fill="#000000",
     font=("Roboto", 72 * -1)
 )
 
 canvas.create_text(
+    109.0,
     55.0,
-    160.0,
-    anchor="w",
+    anchor="nw",
     text="Soll:",
     fill="#000000",
-    font=("Roboto", 72 * -1)
+    font=("Roboto", 64 * -1)
 )
 window.resizable(False, False)
 window.mainloop()
