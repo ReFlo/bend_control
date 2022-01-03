@@ -4,12 +4,15 @@
 
 import configparser
 import threading
+import queue
 import time
 from pathlib import Path
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
+import tkinter
+from tkinter.constants import DISABLED
 
 
 OUTPUT_PATH = Path(__file__).parent
@@ -21,21 +24,18 @@ OFFSET_2 = 200
 OFFSET_3 = 480
 OFFSET_4 = 800
 
-class GUI:
+fl_current_angle = float()
+running = False
 
-    def __init__(self):
+class GUI():
+
+    def __init__(self,parent):
         self.str_angle = str()
         self.stop_offset = float()
         self.stop_value = float()
         self.fl_set_angle = float()
-        self.fl_current_angle = float()
-        self.config = configparser.ConfigParser()    
-        self.window = Tk()
-
-        self.window.geometry("1440x1024")
-        self.window.configure(bg = "#FFFFFF")
-        self.window.resizable(True, True)
-
+        self.config = configparser.ConfigParser()
+        self.window = parent    
         self.config.read('Settings.INI')
         # set_angle = float(config['DEFAULT']['SetAngle'])
 
@@ -58,7 +58,7 @@ class GUI:
             image=self.button_image_1,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_1 clicked"),
+            command=lambda: stop_bending(),
             relief="flat"
         )
         self.button_1.place(
@@ -504,29 +504,34 @@ class GUI:
         self.canvas.itemconfig(self.leng_stop, text=''.join([str(self.stop_value + self.stop_offset),' mm']))
 
     def start_bending(self):
-        self.bend_thread = threading.Thread(target=self.bend()).start()
+        global running
+        running = True
+        threading.Thread(target=bend,args=[self.fl_set_angle]).start()
+        self.button_2["status"]="disabled"
+        return
 
-    def bend(self):
-        self.move(self.fl_set_angle, "up")
-        self.move(0.0, "down")
+def bend(set_angle):
+    global fl_current_angle,running
 
-    def move(self, set_angle:float, direction:str):
-        if direction == "up":   
-            while(self.fl_current_angle < set_angle):
+    while running == True :
+
+        while(fl_current_angle < set_angle and running==True):
                 print("Moving up")
                 time.sleep(1)
-                self.fl_current_angle = 100.0
-            return  
-        elif direction == "down":
-            while(self.fl_current_angle > set_angle):
+                fl_current_angle = 300.0
+
+        while(fl_current_angle > 0 and running==True):
                 print("Moving down")
                 time.sleep(1)
-                self.fl_current_angle = 0.0
-            return
-        print("no direction")
+                fl_current_angle = 0.0
+        return
+    return
 
-    def stop_bending(self):
-        print("Bending is stopped")
+
+def stop_bending():
+    global running
+    running = False
+    print("Bending is stopped")
 
 
 # -------------------- Start Mainloop --------------------
@@ -534,6 +539,10 @@ class GUI:
 
 
 if __name__ == "__main__":
-    gui = GUI()
-    gui.window.mainloop()
+    window = Tk()
+    window.geometry("1440x1024")
+    window.configure(bg = "#FFFFFF")
+    window.resizable(True, True)
+    gui = GUI(window)
+    window.mainloop()
 
