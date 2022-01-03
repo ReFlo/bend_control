@@ -550,6 +550,7 @@ class GUI():
 
 if __name__ == "__main__":
     window = Tk()
+    window.attributes("-fullscreen", True) 
     window.geometry("1280x800")
     window.configure(bg = "#FFFFFF")
     window.resizable(True, True)
