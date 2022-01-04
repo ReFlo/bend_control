@@ -7,7 +7,8 @@ import threading
 import queue
 import time
 from pathlib import Path
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
+import Encoder
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
@@ -42,10 +43,12 @@ class GUI():
         self.window = parent    
         self.config.read('Settings.INI')
         self.running = True
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(PIN_UP, GPIO.OUT)
-        GPIO.setup(PIN_DOWN, GPIO.OUT)
+        # GPIO.setmode(GPIO.BOARD)
+        # GPIO.setup(PIN_UP, GPIO.OUT)
+        # GPIO.setup(PIN_DOWN, GPIO.OUT)
         # self.fl_set_angle = float(config['DEFAULT']['SetAngle'])
+        self.enc = Encoder(15,18)
+        self.thread_angle = threading.Thread(target=self.get_angle)
 
         #--------------- create GUI items ------------------
 
@@ -449,7 +452,6 @@ class GUI():
     def relative_to_assets(self, path: str) -> Path:
         return ASSETS_PATH / Path(path)
 
-
     def add_digit_to_angle(self, value):
 
         if value == 'C':
@@ -464,7 +466,6 @@ class GUI():
 
         self.str_angle = self.str_angle + value
         self.canvas.itemconfig(self.set_angle, text=''.join([self.str_angle,'°']))
-
 
     def change_angle(self, angle):
         try:
@@ -520,17 +521,17 @@ class GUI():
 
             while(self.fl_current_angle < set_angle and self.running==True):
                     print("Moving up")
-                    GPIO.output(PIN_UP,1)
+                    # GPIO.output(PIN_UP,1)
                     time.sleep(1)
                     self.fl_current_angle =300.0
-            GPIO.output(PIN_UP,0)
+            # GPIO.output(PIN_UP,0)
 
             while(self.fl_current_angle > 0 and self.running==True):
                     print("Moving down")
-                    GPIO.output(PIN_DOWN,1)
+                    # GPIO.output(PIN_DOWN,1)
                     time.sleep(1)
                     self.fl_current_angle = 0.0
-            GPIO.output(PIN_DOWN,0)
+            # GPIO.output(PIN_DOWN,0)
             self.running = False
             self.button_2["state"] = "normal"
             return
@@ -539,9 +540,17 @@ class GUI():
 
     def stop_bending(self):
         self.running = False
-        GPIO.output(PIN_UP,0)
-        GPIO.output(PIN_DOWN,0)
+        # GPIO.output(PIN_UP,0)
+        # GPIO.output(PIN_DOWN,0)
         print("Bending is stopped")
+
+    def get_angle(self):
+        angle = self.enc.read()/40
+        if self.fl_current_angle != angle:
+            self.fl_current_angle = angle
+            self.canvas.itemconfigure(self.current_angle, text=''.join(str(angle),"°"))
+        time.sleep(0.001)
+
 
 
 # -------------------- Start Mainloop --------------------
