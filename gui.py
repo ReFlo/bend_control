@@ -169,13 +169,14 @@ class GUI():
         )
 
         self.button_image_7 = PhotoImage(
-            file=self.relative_to_assets("button_7_grey.png"))
+            file=self.relative_to_assets("button_7.png"))
         self.button_7 = Button(
             image=self.button_image_7,
             borderwidth=0,
             highlightthickness=0,
             command=lambda: self.add_digit_to_angle('Enter'),
-            relief="flat"
+            relief="flat",
+            state="disabled"
         )
         self.button_7.place(
             x=791.0,
@@ -460,15 +461,18 @@ class GUI():
         if value == 'C':
             self.str_angle = str()
             self.canvas.itemconfig(self.set_angle, text=''.join([self.str_angle,'°']))
+            self.button_7['state']='disable'
             return
 
         if value == 'Enter':
             self.change_angle(self.str_angle)
             self.str_angle = str()
+            self.button_7['state']='disable'
             return
 
         self.str_angle = self.str_angle + value
         self.canvas.itemconfig(self.set_angle, text=''.join([self.str_angle,'°']))
+        self.button_7['state']='normal'
 
     def change_angle(self, angle):
         try:
@@ -523,14 +527,16 @@ class GUI():
         while self.run_bending == True :
 
             while(self.fl_current_angle < set_angle and self.run_bending==True):
-                    print("Moving up")
+                    # print("Moving up")
                     GPIO.output(PIN_UP,1)
-                    print(self.fl_current_angle)
+                    time.sleep(0.0001)
+                    # print(self.fl_current_angle)
             GPIO.output(PIN_UP,0)
 
             while(self.fl_current_angle > 0 and self.run_bending==True):
-                    print("Moving down")
+                    # print("Moving down")
                     GPIO.output(PIN_DOWN,1)
+                    time.sleep(0.0001)
             GPIO.output(PIN_DOWN,0)
             self.run_bending = False
             self.button_2["state"] = "normal"
@@ -550,7 +556,7 @@ class GUI():
             if self.fl_current_angle != angle:
                 self.fl_current_angle = angle
                 self.canvas.itemconfigure(self.current_angle, text=''.join([f'{angle:.1f}',"°"]))
-            time.sleep(0.001)
+            time.sleep(0.0001)
 
     def on_closing(self):
         self.running = False
