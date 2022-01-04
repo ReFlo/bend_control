@@ -51,7 +51,6 @@ class GUI():
         GPIO.setup(PIN_DOWN, GPIO.OUT)
         self.enc = Encoder.Encoder(15,18)
         # self.fl_set_angle = float(config['DEFAULT']['SetAngle'])
-        self.thread_angle=threading.Thread(target=self.get_angle).start()
 
         #--------------- create GUI items ------------------
 
@@ -412,7 +411,7 @@ class GUI():
             601.0,
             265.0,
             anchor="center",
-            text="90°",
+            text="0°",
             fill="#000000",
             font=("Roboto", 64 * -1)
         )
@@ -451,6 +450,7 @@ class GUI():
             fill="#000000",
             font=("Roboto", 64 * -1)
         )
+        self.thread_angle=threading.Thread(target=self.get_angle).start()
 
     def relative_to_assets(self, path: str) -> Path:
         return ASSETS_PATH / Path(path)
@@ -525,15 +525,12 @@ class GUI():
             while(self.fl_current_angle < set_angle and self.run_bending==True):
                     print("Moving up")
                     GPIO.output(PIN_UP,1)
-                    time.sleep(1)
-                    self.fl_current_angle =300.0
+                    print(self.fl_current_angle)
             GPIO.output(PIN_UP,0)
 
             while(self.fl_current_angle > 0 and self.run_bending==True):
                     print("Moving down")
                     GPIO.output(PIN_DOWN,1)
-                    time.sleep(1)
-                    self.fl_current_angle = 0.0
             GPIO.output(PIN_DOWN,0)
             self.run_bending = False
             self.button_2["state"] = "normal"
@@ -552,11 +549,13 @@ class GUI():
             angle = self.enc.read()/40
             if self.fl_current_angle != angle:
                 self.fl_current_angle = angle
-                self.canvas.itemconfigure(self.current_angle, text=''.join(str(angle),"°"))
+                self.canvas.itemconfigure(self.current_angle, text=''.join([f'{angle:.1f}',"°"]))
+            time.sleep(0.001)
 
     def on_closing(self):
         self.running = False
         self.run_bending = False
+        self.window.destroy()
 
 # -------------------- Start Mainloop --------------------
 
@@ -564,7 +563,7 @@ class GUI():
 
 if __name__ == "__main__":
     window = Tk()
-#     window.attributes("-fullscreen", True) 
+    window.attributes("-fullscreen", True) 
     window.geometry("1280x800")
     window.configure(bg = "#FFFFFF")
     window.resizable(True, True)
