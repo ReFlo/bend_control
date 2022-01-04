@@ -7,8 +7,9 @@ import threading
 import queue
 import time
 from pathlib import Path
-# import RPi.GPIO as GPIO
 import Encoder
+import RPi.GPIO as GPIO
+
 
 
 # from tkinter import *
@@ -27,8 +28,8 @@ OFFSET_2 = 200
 OFFSET_3 = 480
 OFFSET_4 = 800
 
-PIN_UP = 38
-PIN_DOWN = 40
+PIN_UP = 20
+PIN_DOWN = 21
 
 
 
@@ -44,12 +45,12 @@ class GUI():
         self.window = parent    
         self.config.read('Settings.INI')
         self.running = True
-        # GPIO.setmode(GPIO.BOARD)
-        # GPIO.setup(PIN_UP, GPIO.OUT)
-        # GPIO.setup(PIN_DOWN, GPIO.OUT)
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(PIN_UP, GPIO.OUT)
+        GPIO.setup(PIN_DOWN, GPIO.OUT)
+        self.enc = Encoder.Encoder(15,18)
         # self.fl_set_angle = float(config['DEFAULT']['SetAngle'])
-        self.enc = Encoder(15,18)
-        self.thread_angle = threading.Thread(target=self.get_angle)
+        threading.Thread(target=self.get_angle).start()
 
         #--------------- create GUI items ------------------
 
