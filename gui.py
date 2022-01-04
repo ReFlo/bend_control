@@ -10,6 +10,7 @@ from pathlib import Path
 # import RPi.GPIO as GPIO
 import Encoder
 
+
 # from tkinter import *
 # Explicit imports to satisfy Flake8
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
