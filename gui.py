@@ -169,7 +169,7 @@ class GUI():
         )
 
         self.button_image_7 = PhotoImage(
-            file=self.relative_to_assets("button_7.png"))
+            file=self.relative_to_assets("button_7_grey.png"))
         self.button_7 = Button(
             image=self.button_image_7,
             borderwidth=0,
