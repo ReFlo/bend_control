@@ -44,13 +44,14 @@ class GUI():
         self.config = configparser.ConfigParser()
         self.window = parent    
         self.config.read('Settings.INI')
+        self.run_bending = True
         self.running = True
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(PIN_UP, GPIO.OUT)
         GPIO.setup(PIN_DOWN, GPIO.OUT)
         self.enc = Encoder.Encoder(15,18)
         # self.fl_set_angle = float(config['DEFAULT']['SetAngle'])
-        threading.Thread(target=self.get_angle).start()
+        self.thread_angle=threading.Thread(target=self.get_angle).start()
 
         #--------------- create GUI items ------------------
 
@@ -513,47 +514,49 @@ class GUI():
         self.canvas.itemconfig(self.leng_stop, text=str(self.stop_value + self.stop_offset))
 
     def start_bending(self):
-        self.running = True
+        self.run_bending = True
         threading.Thread(target=self.bend,args=[self.fl_set_angle]).start()
         self.button_2["state"] = "disabled"
         return
 
     def bend(self, set_angle):
-        while self.running == True :
+        while self.run_bending == True :
 
-            while(self.fl_current_angle < set_angle and self.running==True):
+            while(self.fl_current_angle < set_angle and self.run_bending==True):
                     print("Moving up")
-                    # GPIO.output(PIN_UP,1)
+                    GPIO.output(PIN_UP,1)
                     time.sleep(1)
                     self.fl_current_angle =300.0
-            # GPIO.output(PIN_UP,0)
+            GPIO.output(PIN_UP,0)
 
-            while(self.fl_current_angle > 0 and self.running==True):
+            while(self.fl_current_angle > 0 and self.run_bending==True):
                     print("Moving down")
-                    # GPIO.output(PIN_DOWN,1)
+                    GPIO.output(PIN_DOWN,1)
                     time.sleep(1)
                     self.fl_current_angle = 0.0
-            # GPIO.output(PIN_DOWN,0)
-            self.running = False
+            GPIO.output(PIN_DOWN,0)
+            self.run_bending = False
             self.button_2["state"] = "normal"
             return
         self.button_2["state"] = "normal"
         return
 
     def stop_bending(self):
-        self.running = False
-        # GPIO.output(PIN_UP,0)
-        # GPIO.output(PIN_DOWN,0)
+        self.run_bending = False
+        GPIO.output(PIN_UP,0)
+        GPIO.output(PIN_DOWN,0)
         print("Bending is stopped")
 
     def get_angle(self):
-        angle = self.enc.read()/40
-        if self.fl_current_angle != angle:
-            self.fl_current_angle = angle
-            self.canvas.itemconfigure(self.current_angle, text=''.join(str(angle),"°"))
-        time.sleep(0.001)
+        while(self.running==True):
+            angle = self.enc.read()/40
+            if self.fl_current_angle != angle:
+                self.fl_current_angle = angle
+                self.canvas.itemconfigure(self.current_angle, text=''.join(str(angle),"°"))
 
-
+    def on_closing(self):
+        self.running = False
+        self.run_bending = False
 
 # -------------------- Start Mainloop --------------------
 
@@ -566,5 +569,6 @@ if __name__ == "__main__":
     window.configure(bg = "#FFFFFF")
     window.resizable(True, True)
     gui = GUI(window)
+    window.protocol("WM_DELETE_WINDOW", gui.on_closing)
     window.mainloop()
 
