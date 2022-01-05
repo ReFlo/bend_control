@@ -57,12 +57,11 @@ class GUI():
         GPIO.setup(PIN_UP, GPIO.OUT)
         GPIO.setup(PIN_DOWN, GPIO.OUT)
         #----------------initialize Remote Pins-----------------
-        # GPIO.setup(PIN_REMOTE_START, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        # GPIO.add_event_detect(PIN_REMOTE_START, GPIO.FALLING, callback =self.start_bending, bouncetime=100)
-        # GPIO.setup(PIN_REMOTE_STOP, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        # GPIO.add_event_detect(PIN_REMOTE_STOP, GPIO.FALLING, callback =self.stop_bending, bouncetime=100)
+        GPIO.setup(PIN_REMOTE_START, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.add_event_detect(PIN_REMOTE_START, GPIO.FALLING, callback =self.start_bending, bouncetime=100)
+        GPIO.setup(PIN_REMOTE_STOP, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.add_event_detect(PIN_REMOTE_STOP, GPIO.FALLING, callback =self.stop_bending, bouncetime=100)
         
-
         #--------------- create GUI items ------------------
 
         self.canvas = Canvas(
@@ -528,7 +527,7 @@ class GUI():
     def display_leng_stop(self):
         self.canvas.itemconfig(self.leng_stop, text=str(self.stop_value + self.stop_offset))
 
-    def start_bending(self,channel=0):
+    def start_bending(self, channel=0):
         self.run_bending = True
         threading.Thread(target=self.bend,args=[self.fl_set_angle]).start()
         self.button_2["state"] = "disabled"
@@ -555,7 +554,7 @@ class GUI():
         self.button_2["state"] = "normal"
         return
 
-    def stop_bending(self,channel=0):
+    def stop_bending(self, channel=0):
         self.run_bending = False
         GPIO.output(PIN_UP,0)
         GPIO.output(PIN_DOWN,0)
