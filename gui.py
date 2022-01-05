@@ -7,7 +7,7 @@ import threading
 import queue
 import time
 from pathlib import Path
-import Encoder
+from pigpio_encoder.rotary import Rotary
 import RPi.GPIO as GPIO
 
 
@@ -46,11 +46,14 @@ class GUI():
         self.config.read('Settings.INI')
         self.run_bending = True
         self.running = True
+        self.enc = Rotary(clk_gpio=15, dt_gpio=18, sw_gpio=14)
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(PIN_UP, GPIO.OUT)
         GPIO.setup(PIN_DOWN, GPIO.OUT)
-        self.enc = Encoder.Encoder(15,18)
         # self.fl_set_angle = float(config['DEFAULT']['SetAngle'])
+
+        #---------------initialize Encoder -----------------
+        self.enc.setup_rotary(rotary_callback=self.get_angle, max=16000, debounce=10)
 
         #--------------- create GUI items ------------------
 
@@ -451,7 +454,7 @@ class GUI():
             fill="#000000",
             font=("Roboto", 64 * -1)
         )
-        self.thread_angle=threading.Thread(target=self.get_angle).start()
+        # self.thread_angle=threading.Thread(target=self.get_angle).start()
 
     def relative_to_assets(self, path: str) -> Path:
         return ASSETS_PATH / Path(path)
@@ -550,13 +553,16 @@ class GUI():
         GPIO.output(PIN_DOWN,0)
         print("Bending is stopped")
 
-    def get_angle(self):
-        while(self.running==True):
-            angle = self.enc.read()/40
-            if self.fl_current_angle != angle:
-                self.fl_current_angle = angle
-                self.canvas.itemconfigure(self.current_angle, text=''.join([f'{angle:.1f}',"°"]))
-            time.sleep(0.0001)
+    def get_angle(self, angle):
+        # while(self.running==True):
+        #     angle = self.enc.read()/40
+        #     if self.fl_current_angle != angle:
+        #         self.fl_current_angle = angle
+        #         self.canvas.itemconfigure(self.current_angle, text=''.join([f'{angle:.1f}',"°"]))
+        #     time.sleep(0.0001)
+        self.fl_current_angle = angle/10
+        self.canvas.itemconfigure(self.current_angle, text=''.join([f'{angle/10:.1f}',"°"]))
+
 
     def on_closing(self):
         self.running = False
