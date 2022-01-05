@@ -1,7 +1,7 @@
 import Encoder
 import time
 
-enc=Encoder.Encoder(15,18)
+enc=Encoder.Encoder(15,14)
 old_arch = 0
 
 while(1):

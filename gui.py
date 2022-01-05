@@ -31,8 +31,8 @@ OFFSET_4 = 800
 PIN_UP = 20
 PIN_DOWN = 21
 
-PIN_REMOTE_START = 16
-PIN_REMOTE_STOP = 18
+PIN_REMOTE_START = 23
+PIN_REMOTE_STOP = 24
 
 
 class GUI():
@@ -49,19 +49,19 @@ class GUI():
         self.run_bending = True
         self.running = True
         # self.fl_set_angle = float(config['DEFAULT']['SetAngle'])
-        
+        #---------------initialize Encoder -----------------
+        self.enc = Rotary(clk_gpio=15, dt_gpio=18, sw_gpio=14)
+        self.enc.setup_rotary(rotary_callback=self.get_angle, max=16000, debounce=10)
         #-----------------initialize Relay Pins-----------------
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(PIN_UP, GPIO.OUT)
         GPIO.setup(PIN_DOWN, GPIO.OUT)
         #----------------initialize Remote Pins-----------------
-        GPIO.setup(PIN_REMOTE_START, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(BUTTON.GPIO, GPIO.FALLING, callback =self.start_bending, bouncetime=100)
-        GPIO.setup(PIN_REMOTE_STOP, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(BUTTON.GPIO, GPIO.FALLING, callback =self.stop_bending, bouncetime=100)
-        #---------------initialize Encoder -----------------
-        self.enc = Rotary(clk_gpio=15, dt_gpio=18, sw_gpio=14)
-        self.enc.setup_rotary(rotary_callback=self.get_angle, max=16000, debounce=10)
+        # GPIO.setup(PIN_REMOTE_START, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        # GPIO.add_event_detect(PIN_REMOTE_START, GPIO.FALLING, callback =self.start_bending, bouncetime=100)
+        # GPIO.setup(PIN_REMOTE_STOP, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        # GPIO.add_event_detect(PIN_REMOTE_STOP, GPIO.FALLING, callback =self.stop_bending, bouncetime=100)
+        
 
         #--------------- create GUI items ------------------
 
@@ -528,7 +528,7 @@ class GUI():
     def display_leng_stop(self):
         self.canvas.itemconfig(self.leng_stop, text=str(self.stop_value + self.stop_offset))
 
-    def start_bending(self):
+    def start_bending(self,channel=0):
         self.run_bending = True
         threading.Thread(target=self.bend,args=[self.fl_set_angle]).start()
         self.button_2["state"] = "disabled"
@@ -555,7 +555,7 @@ class GUI():
         self.button_2["state"] = "normal"
         return
 
-    def stop_bending(self):
+    def stop_bending(self,channel=0):
         self.run_bending = False
         GPIO.output(PIN_UP,0)
         GPIO.output(PIN_DOWN,0)
@@ -584,7 +584,7 @@ class GUI():
 
 if __name__ == "__main__":
     window = Tk()
-    window.attributes("-fullscreen", True) 
+    # window.attributes("-fullscreen", True) 
     window.geometry("1280x800")
     window.configure(bg = "#FFFFFF")
     window.resizable(True, True)
