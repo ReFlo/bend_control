@@ -31,6 +31,8 @@ OFFSET_4 = 800
 PIN_UP = 20
 PIN_DOWN = 21
 
+PIN_REMOTE_START = 16
+PIN_REMOTE_STOP = 18
 
 
 class GUI():
@@ -46,13 +48,19 @@ class GUI():
         self.config.read('Settings.INI')
         self.run_bending = True
         self.running = True
-        self.enc = Rotary(clk_gpio=15, dt_gpio=18, sw_gpio=14)
+        # self.fl_set_angle = float(config['DEFAULT']['SetAngle'])
+        
+        #-----------------initialize Relay Pins-----------------
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(PIN_UP, GPIO.OUT)
         GPIO.setup(PIN_DOWN, GPIO.OUT)
-        # self.fl_set_angle = float(config['DEFAULT']['SetAngle'])
-
+        #----------------initialize Remote Pins-----------------
+        GPIO.setup(PIN_REMOTE_START, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.add_event_detect(BUTTON.GPIO, GPIO.FALLING, callback =self.start_bending, bouncetime=100)
+        GPIO.setup(PIN_REMOTE_STOP, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.add_event_detect(BUTTON.GPIO, GPIO.FALLING, callback =self.stop_bending, bouncetime=100)
         #---------------initialize Encoder -----------------
+        self.enc = Rotary(clk_gpio=15, dt_gpio=18, sw_gpio=14)
         self.enc.setup_rotary(rotary_callback=self.get_angle, max=16000, debounce=10)
 
         #--------------- create GUI items ------------------
@@ -567,6 +575,7 @@ class GUI():
     def on_closing(self):
         self.running = False
         self.run_bending = False
+        GPIO.cleanup()
         self.window.destroy()
 
 # -------------------- Start Mainloop --------------------
