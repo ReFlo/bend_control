@@ -54,23 +54,26 @@ class GUI():
         self.enc = Rotary(clk_gpio=15, dt_gpio=18, sw_gpio=14)
         self.enc.setup_rotary(rotary_callback=self.get_angle, max=16000, debounce=10)
         #-----------------initialize Relay Pins-----------------
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(PIN_UP, GPIO.OUT)
-        GPIO.setup(PIN_DOWN, GPIO.OUT)
+        # GPIO.setmode(GPIO.BCM)
+        # GPIO.setup(PIN_UP, GPIO.OUT)
+        # GPIO.setup(PIN_DOWN, GPIO.OUT)
         #----------------initialize Remote Pins-----------------
         # GPIO.setup(PIN_REMOTE_START, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         # GPIO.add_event_detect(PIN_REMOTE_START, GPIO.FALLING, callback =self.start_bending, bouncetime=100)
         # GPIO.setup(PIN_REMOTE_STOP, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         # GPIO.add_event_detect(PIN_REMOTE_STOP, GPIO.FALLING, callback =self.stop_bending, bouncetime=100)
-        
+        #--------------- initialize Relay Pings
+        self.pi = pigio.pi()
+        self.pi.set_mode(PIN_UP, pigpio.OUTPUT)
+        self.pi.set_mode(PIN_DOWN, pigpio.OUTPUT)
+
         #--------------- Remote Pins pigpio ---------------------
-        pi = pigio.pi()
-        pi.set_mode( PIN_REMOTE_START, pigpio.INPUT)  # GPIO  23 as input
-        pi.set_pull_up_down(PIN_REMOTE_START, pigpio.PUD_UP)
-        pi.callback(PIN_REMOTE_START, pigpio.FALLING_EDGE, lambda: self.start_bending)
-        pi.set_mode( PIN_REMOTE_STOP, pigpio.INPUT)  # GPIO  23 as input
-        pi.set_pull_up_down(PIN_REMOTE_STOP, pigpio.PUD_UP)
-        pi.callback(PIN_REMOTE_START, pigpio.FALLING_EDGE, lambda: self.stop_bending)
+        self.pi.set_mode( PIN_REMOTE_START, pigpio.INPUT)  # GPIO  23 as input
+        self.pi.set_pull_up_down(PIN_REMOTE_START, pigpio.PUD_UP)
+        self.pi.callback(PIN_REMOTE_START, pigpio.FALLING_EDGE, lambda: self.start_bending)
+        self.pi.set_mode( PIN_REMOTE_STOP, pigpio.INPUT)  # GPIO  23 as input
+        self.pi.set_pull_up_down(PIN_REMOTE_STOP, pigpio.PUD_UP)
+        self.pi.callback(PIN_REMOTE_START, pigpio.FALLING_EDGE, lambda: self.stop_bending)
 
         #--------------- create GUI items ------------------
 
@@ -548,16 +551,20 @@ class GUI():
 
             while(self.fl_current_angle < set_angle and self.run_bending==True):
                     # print("Moving up")
-                    GPIO.output(PIN_UP,1)
+                    self.pi.write(PIN_UP, 1)
+                    # GPIO.output(PIN_UP,1)
                     time.sleep(0.0001)
                     # print(self.fl_current_angle)
-            GPIO.output(PIN_UP,0)
+            # GPIO.output(PIN_UP,0)
+            self.pi.write(PIN_UP, 0)
 
             while(self.fl_current_angle > 0 and self.run_bending==True):
                     # print("Moving down")
-                    GPIO.output(PIN_DOWN,1)
+                    # GPIO.output(PIN_DOWN,1)
+                    self.pi.write(PIN_DOWN, 1)
                     time.sleep(0.0001)
-            GPIO.output(PIN_DOWN,0)
+            # GPIO.output(PIN_DOWN,0)
+            self.pi.write(PIN_DOWN, 0)
             self.run_bending = False
             self.button_2["state"] = "normal"
             return
@@ -566,8 +573,10 @@ class GUI():
 
     def stop_bending(self, channel=0):
         self.run_bending = False
-        GPIO.output(PIN_UP,0)
-        GPIO.output(PIN_DOWN,0)
+        # GPIO.output(PIN_UP,0)
+        # GPIO.output(PIN_DOWN,0)
+        self.pi.write(PIN_UP, 0)
+        self.pi.write(PIN_DOWN, 0)
         print("Bending is stopped")
 
     def get_angle(self, angle):
