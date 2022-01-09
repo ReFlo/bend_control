@@ -8,6 +8,7 @@ import queue
 import time
 from pathlib import Path
 from pigpio_encoder.rotary import Rotary
+import pigpio
 import RPi.GPIO as GPIO
 
 
@@ -57,11 +58,20 @@ class GUI():
         GPIO.setup(PIN_UP, GPIO.OUT)
         GPIO.setup(PIN_DOWN, GPIO.OUT)
         #----------------initialize Remote Pins-----------------
-        GPIO.setup(PIN_REMOTE_START, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(PIN_REMOTE_START, GPIO.FALLING, callback =self.start_bending, bouncetime=100)
-        GPIO.setup(PIN_REMOTE_STOP, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(PIN_REMOTE_STOP, GPIO.FALLING, callback =self.stop_bending, bouncetime=100)
+        # GPIO.setup(PIN_REMOTE_START, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        # GPIO.add_event_detect(PIN_REMOTE_START, GPIO.FALLING, callback =self.start_bending, bouncetime=100)
+        # GPIO.setup(PIN_REMOTE_STOP, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        # GPIO.add_event_detect(PIN_REMOTE_STOP, GPIO.FALLING, callback =self.stop_bending, bouncetime=100)
         
+        #--------------- Remote Pins pigpio ---------------------
+        pi = pigio.pi()
+        pi.set_mode( PIN_REMOTE_START, pigpio.INPUT)  # GPIO  23 as input
+        pi.set_pull_up_down(PIN_REMOTE_START, pigpio.PUD_UP)
+        pi.callback(PIN_REMOTE_START, pigpio.FALLING_EDGE, lambda: self.start_bending)
+        pi.set_mode( PIN_REMOTE_STOP, pigpio.INPUT)  # GPIO  23 as input
+        pi.set_pull_up_down(PIN_REMOTE_STOP, pigpio.PUD_UP)
+        pi.callback(PIN_REMOTE_START, pigpio.FALLING_EDGE, lambda: self.stop_bending)
+
         #--------------- create GUI items ------------------
 
         self.canvas = Canvas(
