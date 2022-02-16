@@ -7,15 +7,14 @@ import threading
 import queue
 import time
 from pathlib import Path
-from pigpio_encoder.rotary import Rotary
+# from pigpio_encoder.rotary import Rotary
 import pigpio
-import RPi.GPIO as GPIO
 
 
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
+from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Menu, Toplevel
 import tkinter
 from tkinter.constants import DISABLED
 
@@ -35,6 +34,8 @@ PIN_DOWN = 21
 PIN_REMOTE_START = 23
 PIN_REMOTE_STOP = 24
 
+def relative_to_assets(path: str) -> Path:
+        return ASSETS_PATH / Path(path)
 
 class GUI():
 
@@ -50,30 +51,23 @@ class GUI():
         self.run_bending = True
         self.running = True
         # self.fl_set_angle = float(config['DEFAULT']['SetAngle'])
-        #---------------initialize Encoder -----------------
-        self.enc = Rotary(clk_gpio=15, dt_gpio=18, sw_gpio=14)
-        self.enc.setup_rotary(rotary_callback=self.get_angle, max=16000, debounce=10)
-        #-----------------initialize Relay Pins-----------------
-        # GPIO.setmode(GPIO.BCM)
-        # GPIO.setup(PIN_UP, GPIO.OUT)
-        # GPIO.setup(PIN_DOWN, GPIO.OUT)
-        #----------------initialize Remote Pins-----------------
-        # GPIO.setup(PIN_REMOTE_START, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        # GPIO.add_event_detect(PIN_REMOTE_START, GPIO.FALLING, callback =self.start_bending, bouncetime=100)
-        # GPIO.setup(PIN_REMOTE_STOP, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        # GPIO.add_event_detect(PIN_REMOTE_STOP, GPIO.FALLING, callback =self.stop_bending, bouncetime=100)
-        #--------------- initialize Relay Pings
-        self.pi = pigio.pi()
-        self.pi.set_mode(PIN_UP, pigpio.OUTPUT)
-        self.pi.set_mode(PIN_DOWN, pigpio.OUTPUT)
 
-        #--------------- Remote Pins pigpio ---------------------
-        self.pi.set_mode( PIN_REMOTE_START, pigpio.INPUT)  # GPIO  23 as input
-        self.pi.set_pull_up_down(PIN_REMOTE_START, pigpio.PUD_UP)
-        self.pi.callback(PIN_REMOTE_START, pigpio.FALLING_EDGE, lambda: self.start_bending)
-        self.pi.set_mode( PIN_REMOTE_STOP, pigpio.INPUT)  # GPIO  23 as input
-        self.pi.set_pull_up_down(PIN_REMOTE_STOP, pigpio.PUD_UP)
-        self.pi.callback(PIN_REMOTE_START, pigpio.FALLING_EDGE, lambda: self.stop_bending)
+        # #---------------initialize Encoder -----------------
+        # self.enc = Rotary(clk_gpio=15, dt_gpio=18, sw_gpio=14)
+        # self.enc.setup_rotary(rotary_callback=self.get_angle, max=16000, debounce=10)
+       
+        # #--------------- initialize Relay Pings
+        # self.pi = pigio.pi()
+        # self.pi.set_mode(PIN_UP, pigpio.OUTPUT)
+        # self.pi.set_mode(PIN_DOWN, pigpio.OUTPUT)
+
+        # #--------------- Remote Pins pigpio ---------------------
+        # self.pi.set_mode( PIN_REMOTE_START, pigpio.INPUT)  # GPIO  23 as input
+        # self.pi.set_pull_up_down(PIN_REMOTE_START, pigpio.PUD_UP)
+        # self.pi.callback(PIN_REMOTE_START, pigpio.FALLING_EDGE, lambda: self.start_bending)
+        # self.pi.set_mode( PIN_REMOTE_STOP, pigpio.INPUT)  # GPIO  23 as input
+        # self.pi.set_pull_up_down(PIN_REMOTE_STOP, pigpio.PUD_UP)
+        # self.pi.callback(PIN_REMOTE_START, pigpio.FALLING_EDGE, lambda: self.stop_bending)
 
         #--------------- create GUI items ------------------
 
@@ -88,8 +82,9 @@ class GUI():
         )
 
         self.canvas.place(x = 0, y = 0)
+
         self.button_image_1 = PhotoImage(
-            file=self.relative_to_assets("button_1.png"))
+            file=relative_to_assets("button_1.png"))
         self.button_1 = Button(
             image=self.button_image_1,
             borderwidth=0,
@@ -105,7 +100,7 @@ class GUI():
         )
 
         self.button_image_2 = PhotoImage(
-            file=self.relative_to_assets("button_2.png"))
+            file=relative_to_assets("button_2.png"))
         self.button_2 = Button(
             image=self.button_image_2,
             borderwidth=0,
@@ -121,7 +116,7 @@ class GUI():
         )
 
         self.button_image_3 = PhotoImage(
-            file=self.relative_to_assets("button_3.png"))
+            file=relative_to_assets("button_3.png"))
         self.button_3 = Button(
             bg = "#FFFFFF",
             image=self.button_image_3,
@@ -139,7 +134,7 @@ class GUI():
 
 
         self.button_image_4 = PhotoImage(
-            file=self.relative_to_assets("button_4.png"))
+            file=relative_to_assets("button_4.png"))
         self.button_4 = Button(
             bg = "#FFFFFF",
             image=self.button_image_4,
@@ -158,7 +153,7 @@ class GUI():
 
 
         self.button_image_5 = PhotoImage(
-            file=self.relative_to_assets("button_5.png"))
+            file=relative_to_assets("button_5.png"))
         self.button_5 = Button(
             bg = "#FFFFFF",
             image=self.button_image_5,
@@ -175,7 +170,7 @@ class GUI():
         )
 
         self.button_image_6 = PhotoImage(
-            file=self.relative_to_assets("button_6.png"))
+            file=relative_to_assets("button_6.png"))
         self.button_6 = Button(
             bg = "grey",
             image=self.button_image_6,
@@ -192,7 +187,7 @@ class GUI():
         )
 
         self.button_image_7 = PhotoImage(
-            file=self.relative_to_assets("button_7.png"))
+            file=relative_to_assets("button_7.png"))
         self.button_7 = Button(
             image=self.button_image_7,
             borderwidth=0,
@@ -209,7 +204,7 @@ class GUI():
         )
 
         self.button_image_8 = PhotoImage(
-            file=self.relative_to_assets("button_8.png"))
+            file=relative_to_assets("button_8.png"))
         self.button_8 = Button(
             image=self.button_image_8,
             borderwidth=0,
@@ -225,7 +220,7 @@ class GUI():
         )
 
         self.button_image_9 = PhotoImage(
-            file=self.relative_to_assets("button_9.png"))
+            file=relative_to_assets("button_9.png"))
         self.button_9 = Button(
             image=self.button_image_9,
             borderwidth=0,
@@ -239,13 +234,14 @@ class GUI():
             width=100.0,
             height=100.0
         )
+        
         self.button_image_10 = PhotoImage(
-            file=self.relative_to_assets("button_10.png"))
+            file=relative_to_assets("button_10.png"))
         self.button_10 = Button(
             image=self.button_image_10,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: self.add_digit_to_angle('C'),
+            command=lambda:self.add_digit_to_angle('C'),
             relief="flat"
         )
         self.button_10.place(
@@ -254,9 +250,10 @@ class GUI():
             width=100.0,
             height=100.0
         )
+        self.button_10.bind("<Button-3>",self.open_settings)
 
         self.button_image_11 = PhotoImage(
-            file=self.relative_to_assets("button_11.png"))
+            file=relative_to_assets("button_11.png"))
         self.button_11 = Button(
             image=self.button_image_11,
             borderwidth=0,
@@ -272,7 +269,7 @@ class GUI():
         )
 
         self.button_image_12 = PhotoImage(
-            file=self.relative_to_assets("button_12.png"))
+            file=relative_to_assets("button_12.png"))
         self.button_12 = Button(
             image=self.button_image_12,
             borderwidth=0,
@@ -288,7 +285,7 @@ class GUI():
         )
 
         self.button_image_13 = PhotoImage(
-            file=self.relative_to_assets("button_13.png"))
+            file=relative_to_assets("button_13.png"))
         self.button_13 = Button(
             image=self.button_image_13,
             borderwidth=0,
@@ -304,7 +301,7 @@ class GUI():
         )
 
         self.button_image_14 = PhotoImage(
-            file=self.relative_to_assets("button_14.png"))
+            file=relative_to_assets("button_14.png"))
         self.button_14 = Button(
             image=self.button_image_14,
             borderwidth=0,
@@ -320,7 +317,7 @@ class GUI():
         )
 
         self.button_image_15 = PhotoImage(
-            file=self.relative_to_assets("button_15.png"))
+            file=relative_to_assets("button_15.png"))
         self.button_15 = Button(
             image=self.button_image_15,
             borderwidth=0,
@@ -336,7 +333,7 @@ class GUI():
         )
 
         self.button_image_16 = PhotoImage(
-            file=self.relative_to_assets("button_16.png"))
+            file=relative_to_assets("button_16.png"))
         self.button_16 = Button(
             image=self.button_image_16,
             borderwidth=0,
@@ -350,8 +347,9 @@ class GUI():
             width=100.0,
             height=100.0
         )
+        
         self.button_image_17 = PhotoImage(
-            file=self.relative_to_assets("button_17.png"))
+            file=relative_to_assets("button_17.png"))
         self.button_17 = Button(
             image=self.button_image_17,
             borderwidth=0,
@@ -365,8 +363,9 @@ class GUI():
             width=100.0,
             height=100.0
         )
+        
         self.button_image_18 = PhotoImage(
-            file=self.relative_to_assets("button_18.png"))
+            file=relative_to_assets("button_18.png"))
         self.button_18 = Button(
             image=self.button_image_18,
             borderwidth=0,
@@ -382,7 +381,7 @@ class GUI():
         )
 
         self.button_image_19 = PhotoImage(
-            file=self.relative_to_assets("button_19.png"))
+            file=relative_to_assets("button_19.png"))
         self.button_19 = Button(
             image=self.button_image_19,
             borderwidth=0,
@@ -476,9 +475,6 @@ class GUI():
         )
         # self.thread_angle=threading.Thread(target=self.get_angle).start()
 
-    def relative_to_assets(self, path: str) -> Path:
-        return ASSETS_PATH / Path(path)
-
     def add_digit_to_angle(self, value):
 
         if value == 'C':
@@ -551,20 +547,17 @@ class GUI():
 
             while(self.fl_current_angle < set_angle and self.run_bending==True):
                     # print("Moving up")
-                    self.pi.write(PIN_UP, 1)
-                    # GPIO.output(PIN_UP,1)
+                    # self.pi.write(PIN_UP, 1)
                     time.sleep(0.0001)
                     # print(self.fl_current_angle)
             # GPIO.output(PIN_UP,0)
-            self.pi.write(PIN_UP, 0)
+            # self.pi.write(PIN_UP, 0)
 
             while(self.fl_current_angle > 0 and self.run_bending==True):
                     # print("Moving down")
-                    # GPIO.output(PIN_DOWN,1)
-                    self.pi.write(PIN_DOWN, 1)
+                    # self.pi.write(PIN_DOWN, 1)
                     time.sleep(0.0001)
-            # GPIO.output(PIN_DOWN,0)
-            self.pi.write(PIN_DOWN, 0)
+            # self.pi.write(PIN_DOWN, 0)
             self.run_bending = False
             self.button_2["state"] = "normal"
             return
@@ -573,10 +566,8 @@ class GUI():
 
     def stop_bending(self, channel=0):
         self.run_bending = False
-        # GPIO.output(PIN_UP,0)
-        # GPIO.output(PIN_DOWN,0)
-        self.pi.write(PIN_UP, 0)
-        self.pi.write(PIN_DOWN, 0)
+        # self.pi.write(PIN_UP, 0)
+        # self.pi.write(PIN_DOWN, 0)
         print("Bending is stopped")
 
     def get_angle(self, angle):
@@ -589,17 +580,184 @@ class GUI():
         self.fl_current_angle = angle/10
         self.canvas.itemconfigure(self.current_angle, text=''.join([f'{angle/10:.1f}',"°"]))
 
-
     def on_closing(self):
         self.running = False
         self.run_bending = False
-        GPIO.cleanup()
         self.window.destroy()
 
+    def open_settings(self,event):
+        try:
+            if self.sett_window.state() == "normal":
+                self.sett_window.focus()
+        except:
+            self.sett_window = Toplevel(self.window)
+            self.sett_class = SETTINGS(self.sett_window,self)
+ 
+class SETTINGS():
+    def __init__(self,sett_window,gui) -> None:
+        super().__init__()
+
+        self.sett_window = sett_window
+
+        self.canvas = Canvas(
+            self.sett_window,
+            bg = "#FFFFFF",
+            height = 800,
+            width = 1280,
+            bd = 0,
+            highlightthickness = 0,
+            relief = "ridge"
+        )
+
+        self.canvas.pack(expand=tkinter.YES, fill=tkinter.BOTH)
+        path = self.relative_to_assets("reset_1.png")
+        self.reset_image_1 = PhotoImage(
+            file=path)
+
+        self.reset_button_1 = Button(
+            self.sett_window,
+            image=self.reset_image_1,
+            text="test",
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_1 clicked"),
+            relief="flat"
+        )
+        self.reset_button_1.place(
+            x=720.0,
+            y=75.0,
+            width=380.0,
+            height=100.0
+        )
+        path = self.relative_to_assets("reset_2.png")
+        self.reset_image_2 = PhotoImage(
+            file=path)
+        
+        self.reset_button_2 = Button(
+            self.sett_window,
+            image=self.reset_image_2,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_2 clicked"),
+            relief="flat"
+        )
+        self.reset_button_2.place(
+            x=720.0,
+            y=210.0,
+            width=380.0,
+            height=100.0
+        )
+
+        self.entry_image_1 = PhotoImage(
+            file=relative_to_assets("entry_1.png"))
+        self.entry_bg_1 = self.canvas.create_image(
+            910.0,
+            665.0,
+            image=self.entry_image_1
+        )
+        self.entry_1 = Entry(
+            master=self.sett_window,
+            bd=0,
+            bg="#C4C4C4",
+            highlightthickness=0
+        )
+        self.entry_1.place(
+            x=725.0,
+            y=615.0,
+            width=370.0,
+            height=98.0
+        )
+
+        self.entry_image_2 = PhotoImage(
+            file=relative_to_assets("entry_2.png"))
+        self.entry_bg_2 = self.canvas.create_image(
+            910.0,
+            530.0,
+            image=self.entry_image_2
+        )
+        self.entry_2 = Entry(
+            master=self.sett_window,
+            bd=0,
+            bg="#C4C4C4",
+            highlightthickness=0
+        )
+        self.entry_2.place(
+            x=725.0,
+            y=480.0,
+            width=370.0,
+            height=98.0
+        )
+
+        self.entry_image_3 = PhotoImage(
+            file=relative_to_assets("entry_3.png"))
+        self.entry_bg_3 = self.canvas.create_image(
+            910.0,
+            400.0,
+            image=self.entry_image_3
+        )
+        self.entry_3 = Entry(
+            self.sett_window,
+            bd=0,
+            bg="#C4C4C4",
+            highlightthickness=0
+        )
+        self.entry_3.place(
+            x=725.0,
+            y=350.0,
+            width=370.0,
+            height=98.0
+        )
+
+        self.canvas.create_text(
+            160.0,
+            325.0,
+            anchor="nw",
+            text="Versatz 1:",
+            fill="#000000",
+            font=("Roboto", 64 * -1)
+        )
+
+        self.canvas.create_text(
+            160.0,
+            460.0,
+            anchor="nw",
+            text="Versatz 1:",
+            fill="#000000",
+            font=("Roboto", 64 * -1)
+        )
+
+        self.canvas.create_text(
+            160.0,
+            595.0,
+            anchor="nw",
+            text="Versatz 1:",
+            fill="#000000",
+            font=("Roboto", 64 * -1)
+        )
+
+        self.canvas.create_text(
+            160.0,
+            190.0,
+            anchor="nw",
+            text="Anschlag:",
+            fill="#000000",
+            font=("Roboto", 64 * -1)
+        )
+
+        self.canvas.create_text(
+            160.0,
+            55.0,
+            anchor="nw",
+            text="Winkel:",
+            fill="#000000",
+            font=("Roboto", 64 * -1)
+        )
+    def relative_to_assets(self,path: str) -> Path:
+        return ASSETS_PATH / Path(path)
+
+       
+
 # -------------------- Start Mainloop --------------------
-
-
-
 if __name__ == "__main__":
     window = Tk()
     # window.attributes("-fullscreen", True) 
