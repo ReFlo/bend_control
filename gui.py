@@ -610,6 +610,8 @@ class SETTINGS():
         )
 
         self.canvas.pack(expand=tkinter.YES, fill=tkinter.BOTH)
+        
+        #-------------------- create Settingspage ---------------------------
         path = self.relative_to_assets("reset_1.png")
         self.reset_image_1 = PhotoImage(
             file=path)
@@ -643,7 +645,7 @@ class SETTINGS():
         )
         self.reset_button_2.place(
             x=720.0,
-            y=210.0,
+            y=200.0,
             width=380.0,
             height=100.0
         )
@@ -652,7 +654,7 @@ class SETTINGS():
             file=relative_to_assets("entry_1.png"))
         self.entry_bg_1 = self.canvas.create_image(
             910.0,
-            665.0,
+            375.0,
             image=self.entry_image_1
         )
         self.entry_1 = Entry(
@@ -663,16 +665,16 @@ class SETTINGS():
         )
         self.entry_1.place(
             x=725.0,
-            y=615.0,
+            y=325.0,
             width=370.0,
-            height=98.0
+            height=100.0
         )
 
         self.entry_image_2 = PhotoImage(
             file=relative_to_assets("entry_2.png"))
         self.entry_bg_2 = self.canvas.create_image(
             910.0,
-            530.0,
+            500.0,
             image=self.entry_image_2
         )
         self.entry_2 = Entry(
@@ -683,16 +685,16 @@ class SETTINGS():
         )
         self.entry_2.place(
             x=725.0,
-            y=480.0,
+            y=450.0,
             width=370.0,
-            height=98.0
+            height=100.0
         )
 
         self.entry_image_3 = PhotoImage(
             file=relative_to_assets("entry_3.png"))
         self.entry_bg_3 = self.canvas.create_image(
             910.0,
-            400.0,
+            625.0,
             image=self.entry_image_3
         )
         self.entry_3 = Entry(
@@ -703,55 +705,58 @@ class SETTINGS():
         )
         self.entry_3.place(
             x=725.0,
-            y=350.0,
+            y=575.0,
             width=370.0,
-            height=98.0
+            height=100.0
         )
 
         self.canvas.create_text(
-            160.0,
-            325.0,
-            anchor="nw",
-            text="Versatz 1:",
+            200.0,
+            125.0,
+            anchor="w",
+            text="Winkel:",
             fill="#000000",
             font=("Roboto", 64 * -1)
         )
 
         self.canvas.create_text(
-            160.0,
-            460.0,
-            anchor="nw",
-            text="Versatz 1:",
-            fill="#000000",
-            font=("Roboto", 64 * -1)
-        )
-
-        self.canvas.create_text(
-            160.0,
-            595.0,
-            anchor="nw",
-            text="Versatz 1:",
-            fill="#000000",
-            font=("Roboto", 64 * -1)
-        )
-
-        self.canvas.create_text(
-            160.0,
-            190.0,
-            anchor="nw",
+            200.0,
+            250.0,
+            anchor="w",
             text="Anschlag:",
             fill="#000000",
             font=("Roboto", 64 * -1)
         )
 
         self.canvas.create_text(
-            160.0,
-            55.0,
-            anchor="nw",
-            text="Winkel:",
+            200.0,
+            375.0,
+            anchor="w",
+            text="Versatz 1:",
             fill="#000000",
             font=("Roboto", 64 * -1)
         )
+
+        self.canvas.create_text(
+            200.0,
+            500.0,
+            anchor="w",
+            text="Versatz 2:",
+            fill="#000000",
+            font=("Roboto", 64 * -1)
+        )
+
+        self.canvas.create_text(
+            200.0,
+            625.0,
+            anchor="w",
+            text="Versatz :",
+            fill="#000000",
+            font=("Roboto", 64 * -1)
+        )
+
+
+
     def relative_to_assets(self,path: str) -> Path:
         return ASSETS_PATH / Path(path)
 
