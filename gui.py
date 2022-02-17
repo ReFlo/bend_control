@@ -490,7 +490,8 @@ class GUI():
         self.change_stop_offset(int(self.config['DEFAULT']['stop_offset']))
         self.setting_angle(self.config['DEFAULT']['set_angle'])
         self.get_angle(float(self.config['DEFAULT']['angle']))
-        # self.enc.value(float(self.config['DEFAULT']['angle']))
+        self.enc.value(float(self.config['DEFAULT']['angle']))
+        self.leng_enc.value(float(self.config['DEFAULT']['length']))
         ### ggf unnötig ####
         # self.thread_angle=threading.Thread(target=self.get_angle).start()
 
@@ -768,7 +769,7 @@ class SETTINGS():
             fill="#000000",
             font=("Roboto", 64 * -1)
         )
-# ----------- Text for Offset -----------------
+## ----------- Text for Offset -----------------
 
         # self.canvas.create_text(
         #     200.0,
