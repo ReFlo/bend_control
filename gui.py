@@ -8,7 +8,7 @@ import threading
 import queue
 import time
 from pathlib import Path
-# from pigpio_encoder.rotary import Rotary
+from pigpio_encoder.rotary import Rotary
 import pigpio
 
 
@@ -58,22 +58,26 @@ class GUI():
 
 
 
-        # #---------------initialize Encoder -----------------
-        # self.enc = Rotary(clk_gpio=15, dt_gpio=18, sw_gpio=14)
-        # self.enc.setup_rotary(rotary_callback=self.get_angle, max=16000, debounce=10)
+        #---------------initialize Encoder -----------------
+        self.enc = Rotary(clk_gpio=15, dt_gpio=18, sw_gpio=14)
+        self.enc.setup_rotary(rotary_callback=self.get_angle, max=16000, debounce=10)
        
-        # #--------------- initialize Relay Pings
-        # self.pi = pigio.pi()
-        # self.pi.set_mode(PIN_UP, pigpio.OUTPUT)
-        # self.pi.set_mode(PIN_DOWN, pigpio.OUTPUT)
+        #--------------initialize Lenghtsystem for stop ------------
+        self.leng_enc = Rotary(clk_gpio=13, dt_gpio=19, sw_gpio=26)
+        self.len_enc.setup_rotary(rotary_callback=self.get_length, max=300000, debounce=10)
 
-        # #--------------- Remote Pins pigpio ---------------------
-        # self.pi.set_mode( PIN_REMOTE_START, pigpio.INPUT)  # GPIO  23 as input
-        # self.pi.set_pull_up_down(PIN_REMOTE_START, pigpio.PUD_UP)
-        # self.pi.callback(PIN_REMOTE_START, pigpio.FALLING_EDGE, lambda: self.start_bending)
-        # self.pi.set_mode( PIN_REMOTE_STOP, pigpio.INPUT)  # GPIO  23 as input
-        # self.pi.set_pull_up_down(PIN_REMOTE_STOP, pigpio.PUD_UP)
-        # self.pi.callback(PIN_REMOTE_START, pigpio.FALLING_EDGE, lambda: self.stop_bending)
+        #--------------- initialize Relay Pings
+        self.pi = pigpio.pi()
+        self.pi.set_mode(PIN_UP, pigpio.OUTPUT)
+        self.pi.set_mode(PIN_DOWN, pigpio.OUTPUT)
+
+        #--------------- Remote Pins pigpio ---------------------
+        self.pi.set_mode( PIN_REMOTE_START, pigpio.INPUT)  # GPIO  23 as input
+        self.pi.set_pull_up_down(PIN_REMOTE_START, pigpio.PUD_UP)
+        self.pi.callback(PIN_REMOTE_START, pigpio.FALLING_EDGE, lambda: self.start_bending)
+        self.pi.set_mode( PIN_REMOTE_STOP, pigpio.INPUT)  # GPIO  23 as input
+        self.pi.set_pull_up_down(PIN_REMOTE_STOP, pigpio.PUD_UP)
+        self.pi.callback(PIN_REMOTE_START, pigpio.FALLING_EDGE, lambda: self.stop_bending)
 
         #--------------- create GUI items ------------------
 
@@ -410,7 +414,7 @@ class GUI():
             fill="#C4C4C4",
             outline="")
 
-        self.leng_stop = self.canvas.create_text(
+        self.current_length = self.canvas.create_text(
             601.0,
             405.0,
             anchor="center",
@@ -551,13 +555,13 @@ class GUI():
         with open(CONFIG,'w') as file:
                 self.config.write(file)
         print(''.join(["Aktueller Anschlagoffset: ", str_offset]))
-        self.display_leng_stop()
+        self.display_current_length()
         return
 
-    def display_leng_stop(self):
-        self.canvas.itemconfig(self.leng_stop, text=str(self.stop_value + self.stop_offset))
+    def display_current_length(self):
+        self.canvas.itemconfig(self.current_length, text=str(self.stop_value + self.stop_offset))
 
-    def start_bending(self, channel=0):
+    def start_bending(self, gpio, level, tick):
         self.run_bending = True
         threading.Thread(target=self.bend,args=[self.fl_set_angle]).start()
         self.button_2["state"] = "disabled"
@@ -568,41 +572,41 @@ class GUI():
 
             while(self.fl_current_angle < set_angle and self.run_bending==True):
                     # print("Moving up")
-                    # self.pi.write(PIN_UP, 1)
+                    self.pi.write(PIN_UP, 1)
                     time.sleep(0.0001)
                     # print(self.fl_current_angle)
-            # GPIO.output(PIN_UP,0)
-            # self.pi.write(PIN_UP, 0)
+            self.pi.write(PIN_UP, 0)
 
             while(self.fl_current_angle > 0 and self.run_bending==True):
                     # print("Moving down")
-                    # self.pi.write(PIN_DOWN, 1)
+                    self.pi.write(PIN_DOWN, 1)
                     time.sleep(0.0001)
-            # self.pi.write(PIN_DOWN, 0)
+            self.pi.write(PIN_DOWN, 0)
             self.run_bending = False
             self.button_2["state"] = "normal"
             return
         self.button_2["state"] = "normal"
         return
 
-    def stop_bending(self, channel=0):
+    def stop_bending(self, gpio, level, tick):
         self.run_bending = False
-        # self.pi.write(PIN_UP, 0)
-        # self.pi.write(PIN_DOWN, 0)
+        self.pi.write(PIN_UP, 0)
+        self.pi.write(PIN_DOWN, 0)
         print("Bending is stopped")
 
     def get_angle(self, angle):
-        # while(self.running==True):
-        #     angle = self.enc.read()/40
-        #     if self.fl_current_angle != angle:
-        #         self.fl_current_angle = angle
-        #         self.canvas.itemconfigure(self.current_angle, text=''.join([f'{angle:.1f}',"°"]))
-        #     time.sleep(0.0001)
         self.fl_current_angle = angle/10
         self.config.set('DEFAULT','angle', str(angle))
         with open(CONFIG, 'w') as file:
                 self.config.write(file)
         self.canvas.itemconfigure(self.current_angle, text=''.join([f'{angle/10:.1f}',"°"]))
+
+    def get_length(self, length):
+        self.fl_current_angle = length/10 + self.stop_offset
+        self.config.set('DEFAULT','length', str(length))
+        with open(CONFIG, 'w') as file:
+                self.config.write(file)
+        self.canvas.itemconfigure(self.current_length, text=''.join([f'{length/10:.1f}',"°"]))
 
     def on_closing(self):
         self.running = False
@@ -619,10 +623,11 @@ class GUI():
  
     def reset_angle(self):
         print("reset angle")
-        # self.enc.counter(0)
+        self.enc.counter(0)
 
     def reset_length(self):
         print("reset length")
+        self.leng_enc.counter(0)
 
 class SETTINGS():
     def __init__(self,sett_window,gui) -> None:
@@ -653,7 +658,7 @@ class SETTINGS():
             text="test",
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: gui.reset_angle,
+            command=lambda: gui.reset_angle(),
             relief="flat"
         )
         self.reset_button_1.place(
@@ -671,7 +676,7 @@ class SETTINGS():
             image=self.reset_image_2,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: gui.reset_length,
+            command=lambda: gui.reset_length(),
             relief="flat"
         )
         self.reset_button_2.place(
