@@ -14,7 +14,7 @@ import pigpio
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Menu, Toplevel
+from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Menu, Toplevel, StringVar
 import tkinter
 from tkinter.constants import DISABLED
 
@@ -46,11 +46,22 @@ class GUI():
         self.fl_set_angle = float()
         self.fl_current_angle = float()
         self.config = configparser.ConfigParser()
+        self.offset_0 = StringVar()
+        self.offset_1 = StringVar()
+        self.offset_2 = StringVar()
+        self.offset_3 = StringVar()
         self.window = parent    
-        self.config.read('Settings.INI')
         self.run_bending = True
         self.running = True
-        # self.fl_set_angle = float(config['DEFAULT']['SetAngle'])
+        self.config.read('Settings.INI')
+
+
+        self.fl_set_angle = float(self.config['DEFAULT']['SetAngle'])
+        self.offset_0 = float(self.config['DEFAULT']['Offset_0'])
+        self.offset_1 = float(self.config['DEFAULT']['Offset_1'])
+        self.offset_2 = float(self.config['DEFAULT']['Offset_2'])
+        self.offset_3 = float(self.config['DEFAULT']['Offset_3'])
+
 
         # #---------------initialize Encoder -----------------
         # self.enc = Rotary(clk_gpio=15, dt_gpio=18, sw_gpio=14)
@@ -517,16 +528,16 @@ class GUI():
 
     def change_stop_offset(self, value):
         if value == 1:
-            self.stop_offset = OFFSET_1
+            self.stop_offset = self.offset_0
             self.change_selected_button(self.button_6)
         elif value == 2:
-            self.stop_offset = OFFSET_2
+            self.stop_offset = self.offset_1
             self.change_selected_button(self.button_5)
         elif value == 3:
-            self.stop_offset = OFFSET_3
+            self.stop_offset = self.offset_2
             self.change_selected_button(self.button_4)
         elif value == 4:
-            self.stop_offset = OFFSET_4
+            self.stop_offset = self.offset_3
             self.change_selected_button(self.button_3)
         str_offset= str(self.stop_offset)
         print(''.join(["Aktueller Anschlagoffset: ", str_offset]))
@@ -612,9 +623,9 @@ class SETTINGS():
         self.canvas.pack(expand=tkinter.YES, fill=tkinter.BOTH)
         
         #-------------------- create Settingspage ---------------------------
-        path = self.relative_to_assets("reset_1.png")
+        # path = self.relative_to_assets("reset_1.png")
         self.reset_image_1 = PhotoImage(
-            file=path)
+            file=relative_to_assets("reset_2.png"))
 
         self.reset_button_1 = Button(
             self.sett_window,
@@ -631,9 +642,9 @@ class SETTINGS():
             width=380.0,
             height=100.0
         )
-        path = self.relative_to_assets("reset_2.png")
+        # path = self.relative_to_assets("reset_2.png")
         self.reset_image_2 = PhotoImage(
-            file=path)
+            file=relative_to_assets("reset_2.png"))
         
         self.reset_button_2 = Button(
             self.sett_window,
@@ -650,65 +661,68 @@ class SETTINGS():
             height=100.0
         )
 
-        self.entry_image_1 = PhotoImage(
-            file=relative_to_assets("entry_1.png"))
-        self.entry_bg_1 = self.canvas.create_image(
-            910.0,
-            375.0,
-            image=self.entry_image_1
-        )
-        self.entry_1 = Entry(
-            master=self.sett_window,
-            bd=0,
-            bg="#C4C4C4",
-            highlightthickness=0
-        )
-        self.entry_1.place(
-            x=725.0,
-            y=325.0,
-            width=370.0,
-            height=100.0
-        )
+        # self.entry_image_1 = PhotoImage(
+        #     file=relative_to_assets("entry_1.png"))
+        # self.entry_bg_1 = self.canvas.create_image(
+        #     910.0,
+        #     375.0,
+        #     image=self.entry_image_1
+        # )
+        # self.entry_1 = Entry(
+        #     master=self.sett_window,
+        #     bd=0,
+        #     bg="#C4C4C4",
+        #     highlightthickness=0,
+        #     textvariable=gui.offset_1
+        # )
+        # self.entry_1.place(
+        #     x=725.0,
+        #     y=325.0,
+        #     width=370.0,
+        #     height=100.0
+        # )
 
-        self.entry_image_2 = PhotoImage(
-            file=relative_to_assets("entry_2.png"))
-        self.entry_bg_2 = self.canvas.create_image(
-            910.0,
-            500.0,
-            image=self.entry_image_2
-        )
-        self.entry_2 = Entry(
-            master=self.sett_window,
-            bd=0,
-            bg="#C4C4C4",
-            highlightthickness=0
-        )
-        self.entry_2.place(
-            x=725.0,
-            y=450.0,
-            width=370.0,
-            height=100.0
-        )
+        # self.entry_image_2 = PhotoImage(
+        #     file=relative_to_assets("entry_2.png"))
+        # self.entry_bg_2 = self.canvas.create_image(
+        #     910.0,
+        #     500.0,
+        #     image=self.entry_image_2
+        # )
+        # self.entry_2 = Entry(
+        #     master=self.sett_window,
+        #     bd=0,
+        #     bg="#C4C4C4",
+        #     highlightthickness=0,
+        #     textvariable=gui.offset_2
+        # )
+        # self.entry_2.place(
+        #     x=725.0,
+        #     y=450.0,
+        #     width=370.0,
+        #     height=100.0
+        # )
 
-        self.entry_image_3 = PhotoImage(
-            file=relative_to_assets("entry_3.png"))
-        self.entry_bg_3 = self.canvas.create_image(
-            910.0,
-            625.0,
-            image=self.entry_image_3
-        )
-        self.entry_3 = Entry(
-            self.sett_window,
-            bd=0,
-            bg="#C4C4C4",
-            highlightthickness=0
-        )
-        self.entry_3.place(
-            x=725.0,
-            y=575.0,
-            width=370.0,
-            height=100.0
-        )
+        # self.entry_image_3 = PhotoImage(
+        #     file=relative_to_assets("entry_3.png"))
+        # self.entry_bg_3 = self.canvas.create_image(
+        #     910.0,
+        #     625.0,
+        #     image=self.entry_image_3
+        # )
+        # self.entry_3 = Entry(
+        #     self.sett_window,
+        #     bd=0,
+        #     bg="#C4C4C4",
+        #     highlightthickness=0,
+        #     textvariable=gui.offset_3
+        # )
+        # self.entry_3.place(
+        #     x=725.0,
+        #     y=575.0,
+        #     width=370.0,
+        #     height=100.0
+        # )
 
         self.canvas.create_text(
             200.0,
@@ -728,32 +742,32 @@ class SETTINGS():
             font=("Roboto", 64 * -1)
         )
 
-        self.canvas.create_text(
-            200.0,
-            375.0,
-            anchor="w",
-            text="Versatz 1:",
-            fill="#000000",
-            font=("Roboto", 64 * -1)
-        )
+        # self.canvas.create_text(
+        #     200.0,
+        #     375.0,
+        #     anchor="w",
+        #     text="Versatz 1:",
+        #     fill="#000000",
+        #     font=("Roboto", 64 * -1)
+        # )
 
-        self.canvas.create_text(
-            200.0,
-            500.0,
-            anchor="w",
-            text="Versatz 2:",
-            fill="#000000",
-            font=("Roboto", 64 * -1)
-        )
+        # self.canvas.create_text(
+        #     200.0,
+        #     500.0,
+        #     anchor="w",
+        #     text="Versatz 2:",
+        #     fill="#000000",
+        #     font=("Roboto", 64 * -1)
+        # )
 
-        self.canvas.create_text(
-            200.0,
-            625.0,
-            anchor="w",
-            text="Versatz :",
-            fill="#000000",
-            font=("Roboto", 64 * -1)
-        )
+        # self.canvas.create_text(
+        #     200.0,
+        #     625.0,
+        #     anchor="w",
+        #     text="Versatz 3:",
+        #     fill="#000000",
+        #     font=("Roboto", 64 * -1)
+        # )
 
 
 
