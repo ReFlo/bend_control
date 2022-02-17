@@ -3,6 +3,7 @@
 # https://github.com/ParthJadhav/Tkinter-Designer
 
 import configparser
+from pickletools import int4
 import threading
 import queue
 import time
@@ -22,11 +23,7 @@ from tkinter.constants import DISABLED
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path("./assets")
 
-# Stop offsets 1
-OFFSET_1 = 0
-OFFSET_2 = 200
-OFFSET_3 = 480
-OFFSET_4 = 800
+CONFIG = 'Settings.INI'
 
 PIN_UP = 20
 PIN_DOWN = 21
@@ -46,21 +43,19 @@ class GUI():
         self.fl_set_angle = float()
         self.fl_current_angle = float()
         self.config = configparser.ConfigParser()
-        self.offset_0 = StringVar()
-        self.offset_1 = StringVar()
-        self.offset_2 = StringVar()
-        self.offset_3 = StringVar()
         self.window = parent    
         self.run_bending = True
         self.running = True
-        self.config.read('Settings.INI')
 
+        #--------- get config data--------------
+        self.config.read(CONFIG)
+        self.fl_set_angle = float(self.config['DEFAULT']['set_angle'])
+        self.fl_current_length = float(self.config['DEFAULT']['length'])
+        self.offset_0 = float(self.config['DEFAULT']['offset_0'])
+        self.offset_1 = float(self.config['DEFAULT']['offset_1'])
+        self.offset_2 = float(self.config['DEFAULT']['offset_2'])
+        self.offset_3 = float(self.config['DEFAULT']['offset_3'])
 
-        self.fl_set_angle = float(self.config['DEFAULT']['SetAngle'])
-        self.offset_0 = float(self.config['DEFAULT']['Offset_0'])
-        self.offset_1 = float(self.config['DEFAULT']['Offset_1'])
-        self.offset_2 = float(self.config['DEFAULT']['Offset_2'])
-        self.offset_3 = float(self.config['DEFAULT']['Offset_3'])
 
 
         # #---------------initialize Encoder -----------------
@@ -484,7 +479,19 @@ class GUI():
             fill="#000000",
             font=("Roboto", 64 * -1)
         )
+        
+
+
+        ########## Update displays #########
+        self.change_stop_offset(int(self.config['DEFAULT']['stop_offset']))
+        self.setting_angle(self.config['DEFAULT']['set_angle'])
+        self.get_angle(float(self.config['DEFAULT']['angle']))
+        # self.enc.value(float(self.config['DEFAULT']['angle']))
+        ### ggf unnötig ####
         # self.thread_angle=threading.Thread(target=self.get_angle).start()
+
+        ####################################
+
 
     def add_digit_to_angle(self, value):
 
@@ -495,7 +502,7 @@ class GUI():
             return
 
         if value == 'Enter':
-            self.change_angle(self.str_angle)
+            self.setting_angle(self.str_angle)
             self.str_angle = str()
             self.button_7['state']='disable'
             return
@@ -504,15 +511,15 @@ class GUI():
         self.canvas.itemconfig(self.set_angle, text=''.join([self.str_angle,'°']))
         self.button_7['state']='normal'
 
-    def change_angle(self, angle):
+    def setting_angle(self, angle):
         try:
-            self.result = eval(angle)
-            print(self.result)
-            self.canvas.itemconfig(self.set_angle, text=''.join([str(self.result),'°']))
-            self.fl_set_angle = float(self.result)
-            # config['DEFAULT']['SetAngle'] = str(result)
-            # with open('Settings.INI', 'w') as configfile:    # save to configfile
-            #     config.write(configfile)
+            result = eval(angle)
+            print(result)
+            self.canvas.itemconfig(self.set_angle, text=''.join([str(result),'°']))
+            self.fl_set_angle = float(result)
+            self.config.set('DEFAULT','set_angle',str(result))
+            with open(CONFIG,'w') as file:
+                self.config.write(file)
 
         except Exception as e:
             print(e)
@@ -540,6 +547,9 @@ class GUI():
             self.stop_offset = self.offset_3
             self.change_selected_button(self.button_3)
         str_offset= str(self.stop_offset)
+        self.config.set("DEFAULT",'stop_offset', str(value))
+        with open(CONFIG,'w') as file:
+                self.config.write(file)
         print(''.join(["Aktueller Anschlagoffset: ", str_offset]))
         self.display_leng_stop()
         return
@@ -589,6 +599,9 @@ class GUI():
         #         self.canvas.itemconfigure(self.current_angle, text=''.join([f'{angle:.1f}',"°"]))
         #     time.sleep(0.0001)
         self.fl_current_angle = angle/10
+        self.config.set('DEFAULT','angle', str(angle))
+        with open(CONFIG, 'w') as file:
+                self.config.write(file)
         self.canvas.itemconfigure(self.current_angle, text=''.join([f'{angle/10:.1f}',"°"]))
 
     def on_closing(self):
@@ -604,6 +617,13 @@ class GUI():
             self.sett_window = Toplevel(self.window)
             self.sett_class = SETTINGS(self.sett_window,self)
  
+    def reset_angle(self):
+        print("reset angle")
+        # self.enc.counter(0)
+
+    def reset_length(self):
+        print("reset length")
+
 class SETTINGS():
     def __init__(self,sett_window,gui) -> None:
         super().__init__()
@@ -633,7 +653,7 @@ class SETTINGS():
             text="test",
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_1 clicked"),
+            command=lambda: gui.reset_angle,
             relief="flat"
         )
         self.reset_button_1.place(
@@ -651,7 +671,7 @@ class SETTINGS():
             image=self.reset_image_2,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_2 clicked"),
+            command=lambda: gui.reset_length,
             relief="flat"
         )
         self.reset_button_2.place(
@@ -660,6 +680,8 @@ class SETTINGS():
             width=380.0,
             height=100.0
         )
+
+        # ------------ Entry for Offset ---------------
 
         # self.entry_image_1 = PhotoImage(
         #     file=relative_to_assets("entry_1.png"))
@@ -741,6 +763,7 @@ class SETTINGS():
             fill="#000000",
             font=("Roboto", 64 * -1)
         )
+# ----------- Text for Offset -----------------
 
         # self.canvas.create_text(
         #     200.0,
@@ -768,11 +791,6 @@ class SETTINGS():
         #     fill="#000000",
         #     font=("Roboto", 64 * -1)
         # )
-
-
-
-    def relative_to_assets(self,path: str) -> Path:
-        return ASSETS_PATH / Path(path)
 
        
 
