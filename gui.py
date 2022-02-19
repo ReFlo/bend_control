@@ -8,6 +8,7 @@ import threading
 import queue
 import time
 from pathlib import Path
+from tkinter.dialog import Dialog
 from pigpio_encoder.rotary import Rotary
 import pigpio
 
@@ -42,6 +43,7 @@ class GUI():
         self.stop_value = float()
         self.fl_set_angle = float()
         self.fl_current_angle = float()
+        self.fl_current_length = float()
         self.config = configparser.ConfigParser()
         self.window = parent    
         self.run_bending = True
@@ -49,8 +51,8 @@ class GUI():
 
         #--------- get config data--------------
         self.config.read(CONFIG)
-        self.fl_set_angle = float(self.config['DEFAULT']['set_angle'])
-        self.fl_current_length = float(self.config['DEFAULT']['length'])
+        # self.fl_set_angle = float(self.config['DEFAULT']['set_angle'])
+        # self.fl_current_length = float(self.config['DEFAULT']['length'])
         self.offset_0 = float(self.config['DEFAULT']['offset_0'])
         self.offset_1 = float(self.config['DEFAULT']['offset_1'])
         self.offset_2 = float(self.config['DEFAULT']['offset_2'])
@@ -83,9 +85,12 @@ class GUI():
         ########## Update displays #########
         self.change_stop_offset(int(self.config['DEFAULT']['stop_offset']))
         self.setting_angle(self.config['DEFAULT']['set_angle'])
-        self.get_angle(float(self.config['DEFAULT']['angle']))
-        self.enc.counter = int(self.config['DEFAULT']['angle'])
-        self.len_enc.counter = int(self.config['DEFAULT']['length'])
+        ######### Load last values of angle and length ###############
+        # self.get_angle(float(self.config['DEFAULT']['angle']))
+        # self.enc.counter = int(self.config['DEFAULT']['angle'])
+        # self.len_enc.counter = int(self.config['DEFAULT']['length'])
+
+        ## open settingswindow after starting#
 
     ##------------------- create grafic parts of gui -----------------   
     def create_gui(self):
@@ -610,13 +615,14 @@ class GUI():
         self.run_bending = False
         self.window.destroy()
 
-    def open_settings(self,event):
+    def open_settings(self,event=None):
         try:
             if self.sett_window.state() == "normal":
                 self.sett_window.focus()
         except:
             self.sett_window = Toplevel(self.window)
             self.sett_class = SETTINGS(self.sett_window,self)
+            self.sett_window.lift()
  
     def reset_angle(self):
         print("reset angle")
@@ -630,9 +636,38 @@ class GUI():
         self.fl_current_length = self.stop_offset
         self.display_current_length()
 
+    def initialize_angle(self):
+        init_window = Toplevel(self.window)
+        canvas = Canvas(
+            init_window,
+            bg = "#FFFFFF",
+            height = 800,
+            width = 1280,
+            bd = 0,
+            highlightthickness = 0,
+            relief = "ridge"
+        )
+        canvas.pack(expand=tkinter.YES, fill=tkinter.BOTH)
+        reset_button_1 = Button(
+            init_window,
+            # image=self.reset_image_1,
+            text="RESET",
+            borderwidth=2,
+            highlightthickness=0,
+            command=lambda: gui.reset_angle(),
+            relief="flat"
+        )
+        reset_button_1.place(
+            x=720.0,
+            y=75.0,
+            width=380.0,
+            height=100.0
+        )
+        
 class SETTINGS():
     def __init__(self,sett_window,gui) -> None:
         super().__init__()
+        #-------------------- create Settingspage ---------------------------
 
         self.sett_window = sett_window
 
@@ -648,8 +683,6 @@ class SETTINGS():
 
         self.canvas.pack(expand=tkinter.YES, fill=tkinter.BOTH)
         
-        #-------------------- create Settingspage ---------------------------
-        # path = self.relative_to_assets("reset_1.png")
         self.reset_image_1 = PhotoImage(
             file=relative_to_assets("reset_2.png"))
 
@@ -659,7 +692,7 @@ class SETTINGS():
             text="test",
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: gui.reset_angle(),
+            command=lambda: gui.intialize_angle(),
             relief="flat"
         )
         self.reset_button_1.place(
@@ -668,7 +701,7 @@ class SETTINGS():
             width=380.0,
             height=100.0
         )
-        # path = self.relative_to_assets("reset_2.png")
+
         self.reset_image_2 = PhotoImage(
             file=relative_to_assets("reset_2.png"))
         
@@ -687,71 +720,6 @@ class SETTINGS():
             height=100.0
         )
 
-        # ------------ Entry for Offset ---------------
-
-        # self.entry_image_1 = PhotoImage(
-        #     file=relative_to_assets("entry_1.png"))
-        # self.entry_bg_1 = self.canvas.create_image(
-        #     910.0,
-        #     375.0,
-        #     image=self.entry_image_1
-        # )
-        # self.entry_1 = Entry(
-        #     master=self.sett_window,
-        #     bd=0,
-        #     bg="#C4C4C4",
-        #     highlightthickness=0,
-        #     textvariable=gui.offset_1
-        # )
-        # self.entry_1.place(
-        #     x=725.0,
-        #     y=325.0,
-        #     width=370.0,
-        #     height=100.0
-        # )
-
-        # self.entry_image_2 = PhotoImage(
-        #     file=relative_to_assets("entry_2.png"))
-        # self.entry_bg_2 = self.canvas.create_image(
-        #     910.0,
-        #     500.0,
-        #     image=self.entry_image_2
-        # )
-        # self.entry_2 = Entry(
-        #     master=self.sett_window,
-        #     bd=0,
-        #     bg="#C4C4C4",
-        #     highlightthickness=0,
-        #     textvariable=gui.offset_2
-        # )
-        # self.entry_2.place(
-        #     x=725.0,
-        #     y=450.0,
-        #     width=370.0,
-        #     height=100.0
-        # )
-
-        # self.entry_image_3 = PhotoImage(
-        #     file=relative_to_assets("entry_3.png"))
-        # self.entry_bg_3 = self.canvas.create_image(
-        #     910.0,
-        #     625.0,
-        #     image=self.entry_image_3
-        # )
-        # self.entry_3 = Entry(
-        #     self.sett_window,
-        #     bd=0,
-        #     bg="#C4C4C4",
-        #     highlightthickness=0,
-        #     textvariable=gui.offset_3
-        # )
-        # self.entry_3.place(
-        #     x=725.0,
-        #     y=575.0,
-        #     width=370.0,
-        #     height=100.0
-        # )
-
         self.canvas.create_text(
             200.0,
             125.0,
@@ -769,35 +737,6 @@ class SETTINGS():
             fill="#000000",
             font=("Roboto", 64 * -1)
         )
-## ----------- Text for Offset -----------------
-
-        # self.canvas.create_text(
-        #     200.0,
-        #     375.0,
-        #     anchor="w",
-        #     text="Versatz 1:",
-        #     fill="#000000",
-        #     font=("Roboto", 64 * -1)
-        # )
-
-        # self.canvas.create_text(
-        #     200.0,
-        #     500.0,
-        #     anchor="w",
-        #     text="Versatz 2:",
-        #     fill="#000000",
-        #     font=("Roboto", 64 * -1)
-        # )
-
-        # self.canvas.create_text(
-        #     200.0,
-        #     625.0,
-        #     anchor="w",
-        #     text="Versatz 3:",
-        #     fill="#000000",
-        #     font=("Roboto", 64 * -1)
-        # )
-
        
 
 # -------------------- Start Mainloop --------------------
@@ -809,5 +748,6 @@ if __name__ == "__main__":
     window.resizable(True, True)
     gui = GUI(window)
     window.protocol("WM_DELETE_WINDOW", gui.on_closing)
+    window.after(10,lambda: gui.initialize_angle( ))
     window.mainloop()
 
