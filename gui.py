@@ -55,15 +55,13 @@ class GUI():
         self.offset_1 = float(self.config['DEFAULT']['offset_1'])
         self.offset_2 = float(self.config['DEFAULT']['offset_2'])
         self.offset_3 = float(self.config['DEFAULT']['offset_3'])
-
-
-
         #---------------initialize Encoder -----------------
         self.enc = Rotary(clk_gpio=15, dt_gpio=18, sw_gpio=14)
         self.enc.setup_rotary(rotary_callback=self.get_angle, max=16000, debounce=10)
+
        
         #--------------initialize Lenghtsystem for stop ------------
-        self.leng_enc = Rotary(clk_gpio=13, dt_gpio=19, sw_gpio=26)
+        self.len_enc = Rotary(clk_gpio=13, dt_gpio=19, sw_gpio=26)
         self.len_enc.setup_rotary(rotary_callback=self.get_length, max=300000, debounce=10)
 
         #--------------- initialize Relay Pings
@@ -80,7 +78,17 @@ class GUI():
         self.pi.callback(PIN_REMOTE_START, pigpio.FALLING_EDGE, lambda: self.stop_bending)
 
         #--------------- create GUI items ------------------
+        self.create_gui()
 
+        ########## Update displays #########
+        self.change_stop_offset(int(self.config['DEFAULT']['stop_offset']))
+        self.setting_angle(self.config['DEFAULT']['set_angle'])
+        self.get_angle(float(self.config['DEFAULT']['angle']))
+        self.enc.counter = int(self.config['DEFAULT']['angle'])
+        self.len_enc.counter = int(self.config['DEFAULT']['length'])
+
+    ##------------------- create grafic parts of gui -----------------   
+    def create_gui(self):
         self.canvas = Canvas(
             self.window,
             bg = "#FFFFFF",
@@ -100,7 +108,8 @@ class GUI():
             borderwidth=0,
             highlightthickness=0,
             command=lambda: self.stop_bending(),
-            relief="flat"
+            relief="flat",
+            state="disabled"
         )
         self.button_1.place(
             x=484.0,
@@ -484,20 +493,6 @@ class GUI():
             font=("Roboto", 64 * -1)
         )
         
-
-
-        ########## Update displays #########
-        self.change_stop_offset(int(self.config['DEFAULT']['stop_offset']))
-        self.setting_angle(self.config['DEFAULT']['set_angle'])
-        self.get_angle(float(self.config['DEFAULT']['angle']))
-        self.enc.value(float(self.config['DEFAULT']['angle']))
-        self.leng_enc.value(float(self.config['DEFAULT']['length']))
-        ### ggf unnötig ####
-        # self.thread_angle=threading.Thread(target=self.get_angle).start()
-
-        ####################################
-
-
     def add_digit_to_angle(self, value):
 
         if value == 'C':
@@ -554,18 +549,19 @@ class GUI():
         str_offset= str(self.stop_offset)
         self.config.set("DEFAULT",'stop_offset', str(value))
         with open(CONFIG,'w') as file:
-                self.config.write(file)
+            self.config.write(file)
         print(''.join(["Aktueller Anschlagoffset: ", str_offset]))
         self.display_current_length()
         return
 
     def display_current_length(self):
-        self.canvas.itemconfig(self.current_length, text=str(self.stop_value + self.stop_offset))
+        self.canvas.itemconfig(self.current_length, text=str(self.fl_current_length+ self.stop_offset))
 
-    def start_bending(self, gpio, level, tick):
+    def start_bending(self, channel=0):
         self.run_bending = True
+        self.button_2['state'] = 'disabled'
+        self.button_1['state'] = 'normal'
         threading.Thread(target=self.bend,args=[self.fl_set_angle]).start()
-        self.button_2["state"] = "disabled"
         return
 
     def bend(self, set_angle):
@@ -589,25 +585,25 @@ class GUI():
         self.button_2["state"] = "normal"
         return
 
-    def stop_bending(self, gpio, level, tick):
+    def stop_bending(self, channel=0):
         self.run_bending = False
         self.pi.write(PIN_UP, 0)
         self.pi.write(PIN_DOWN, 0)
         print("Bending is stopped")
+        self.button_1['state'] = 'disabled'
+        self.button_2['state'] = 'normal'
 
     def get_angle(self, angle):
         self.fl_current_angle = angle/10
-        self.config.set('DEFAULT','angle', str(angle))
-        with open(CONFIG, 'w') as file:
-                self.config.write(file)
+        # self.config.set('DEFAULT','angle', str(int(angle)))
+        # self.config.write(self.file)
         self.canvas.itemconfigure(self.current_angle, text=''.join([f'{angle/10:.1f}',"°"]))
 
     def get_length(self, length):
-        self.fl_current_angle = length/10 + self.stop_offset
-        self.config.set('DEFAULT','length', str(length))
-        with open(CONFIG, 'w') as file:
-                self.config.write(file)
-        self.canvas.itemconfigure(self.current_length, text=''.join([f'{length/10:.1f}',"°"]))
+        self.fl_current_length = length/10
+        # self.config.set('DEFAULT','length', str(int(length)))
+        # self.config.write(self.file)
+        self.canvas.itemconfigure(self.current_length, text=f'{self.fl_current_length + self.stop_offset:.1f}')
 
     def on_closing(self):
         self.running = False
@@ -624,11 +620,15 @@ class GUI():
  
     def reset_angle(self):
         print("reset angle")
-        self.enc.counter(0)
+        self.enc.counter = 0
+        self.fl_current_angle = 0.0
+        self.display_current_length()
 
     def reset_length(self):
         print("reset length")
-        self.leng_enc.counter(0)
+        self.len_enc.counter = 0
+        self.fl_current_length = self.stop_offset
+        self.display_current_length()
 
 class SETTINGS():
     def __init__(self,sett_window,gui) -> None:
