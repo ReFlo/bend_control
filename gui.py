@@ -649,6 +649,9 @@ class GUI():
         self.init_window = Toplevel(self.window)
         self.init_class = INIT(self.init_window,self,mode,single)
 
+    def close_settings(self):
+        del self.sett_class
+        self.sett_window.destroy()
         
 class SETTINGS():
     def __init__(self,sett_window,gui) -> None:
@@ -705,6 +708,26 @@ class SETTINGS():
             width=380.0,
             height=100.0
         )
+
+        self.reset_finished_image = PhotoImage(
+            file=relative_to_assets("button_finished.png"))
+        
+        self.reset_finished = Button(
+            self.sett_window,
+            image=self.reset_image_2,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: gui.close_settings(),
+            relief="flat"
+        )
+        self.reset_finished.place(
+            x=720.0,
+            y=200.0,
+            width=380.0,
+            height=100.0
+        )
+
+
 
         self.canvas.create_text(
             200.0,
