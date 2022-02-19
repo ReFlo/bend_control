@@ -8,7 +8,6 @@ import threading
 import queue
 import time
 from pathlib import Path
-from tkinter.dialog import Dialog
 from pigpio_encoder.rotary import Rotary
 import pigpio
 
@@ -558,10 +557,13 @@ class GUI():
         print(''.join(["Aktueller Anschlagoffset: ", str_offset]))
         self.display_current_length()
         return
-
+    
+    def display_current_angle(self):
+            self.canvas.itemconfigure(self.current_angle, text=''.join([f'{self.current_angle:.1f}',"°"]))
+    
     def display_current_length(self):
         self.canvas.itemconfig(self.current_length, text=str(self.fl_current_length+ self.stop_offset))
-
+  
     def start_bending(self, channel=0):
         self.run_bending = True
         self.button_2['state'] = 'disabled'
@@ -602,7 +604,7 @@ class GUI():
         self.fl_current_angle = angle/10
         # self.config.set('DEFAULT','angle', str(int(angle)))
         # self.config.write(self.file)
-        self.canvas.itemconfigure(self.current_angle, text=''.join([f'{angle/10:.1f}',"°"]))
+        self.display_current_angle()
 
     def get_length(self, length):
         self.fl_current_length = length/10
@@ -624,45 +626,29 @@ class GUI():
             self.sett_class = SETTINGS(self.sett_window,self)
             self.sett_window.lift()
  
-    def reset_angle(self):
+    def reset_angle(self,single):
         print("reset angle")
         self.enc.counter = 0
         self.fl_current_angle = 0.0
-        self.display_current_length()
+        if self.init_class:
+            del self.init_class
+            self.init_window.destroy()
+            if single == 0:
+                self.initialize("length")
 
     def reset_length(self):
         print("reset length")
         self.len_enc.counter = 0
         self.fl_current_length = self.stop_offset
         self.display_current_length()
+        if self.init_class:
+            del self.init_class
+            self.init_window.destroy()
 
-    def initialize_angle(self):
-        init_window = Toplevel(self.window)
-        canvas = Canvas(
-            init_window,
-            bg = "#FFFFFF",
-            height = 800,
-            width = 1280,
-            bd = 0,
-            highlightthickness = 0,
-            relief = "ridge"
-        )
-        canvas.pack(expand=tkinter.YES, fill=tkinter.BOTH)
-        reset_button_1 = Button(
-            init_window,
-            # image=self.reset_image_1,
-            text="RESET",
-            borderwidth=2,
-            highlightthickness=0,
-            command=lambda: gui.reset_angle(),
-            relief="flat"
-        )
-        reset_button_1.place(
-            x=720.0,
-            y=75.0,
-            width=380.0,
-            height=100.0
-        )
+    def initialize(self,mode,single=0):
+        self.init_window = Toplevel(self.window)
+        self.init_class = INIT(self.init_window,self,mode,single)
+
         
 class SETTINGS():
     def __init__(self,sett_window,gui) -> None:
@@ -692,7 +678,7 @@ class SETTINGS():
             text="test",
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: gui.intialize_angle(),
+            command=lambda: gui.initialize("angle",1),
             relief="flat"
         )
         self.reset_button_1.place(
@@ -710,7 +696,7 @@ class SETTINGS():
             image=self.reset_image_2,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: gui.reset_length(),
+            command=lambda: gui.initialize("length",1),
             relief="flat"
         )
         self.reset_button_2.place(
@@ -738,6 +724,56 @@ class SETTINGS():
             font=("Roboto", 64 * -1)
         )
        
+class INIT():
+    def __init__(self,init_window,gui,mode,single) -> None:
+
+        self.init_canvas = Canvas(
+            init_window,
+            bg = "#FFFFFF",
+            height = 800,
+            width = 1280,
+            bd = 0,
+            highlightthickness = 0,
+            relief = "ridge"
+        )
+
+        self.init_canvas.pack(expand=tkinter.YES, fill=tkinter.BOTH)
+
+        self.init_button_1 = Button(
+                init_window,
+                image=gui.button_image_7,
+                text="Enter",
+                borderwidth=0,
+                highlightthickness=0,
+                relief="flat"
+            )
+
+        if mode == "angle":
+            self.init_button_1['command']=lambda: gui.reset_angle(single)
+            text = "Biegewange auf Nullstellung fahren und mit Enter bestätigen"
+        elif mode == "length":
+            self.init_button_1['command']=lambda: gui.reset_length()
+            text = "Anschlag auf Nullstellung fahren und mit Enter bestätigen"
+
+        self.init_button_1.place(
+            x=460.0,
+            y=500.0,
+            width=380.0,
+            height=100.0
+        )
+
+        self.init_text=self.init_canvas.create_text(
+            640.0,
+            200.0,
+            anchor="c",
+            text=text,
+            fill="#000000",
+            font=("Roboto", 64 * -1),
+            width = 1200,
+            justify='center' 
+        )
+
+
 
 # -------------------- Start Mainloop --------------------
 if __name__ == "__main__":
@@ -748,6 +784,6 @@ if __name__ == "__main__":
     window.resizable(True, True)
     gui = GUI(window)
     window.protocol("WM_DELETE_WINDOW", gui.on_closing)
-    window.after(10,lambda: gui.initialize_angle( ))
+    window.after(10,lambda: gui.initialize("angle",0))
     window.mainloop()
 
