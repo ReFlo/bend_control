@@ -623,6 +623,7 @@ class GUI():
                 self.sett_window.focus()
         except:
             self.sett_window = Toplevel(self.window)
+            self.sett_window.attributes("-fullscreen", True) 
             self.sett_class = SETTINGS(self.sett_window,self)
             self.sett_window.lift()
  
@@ -631,15 +632,19 @@ class GUI():
         self.enc.counter = 0
         self.fl_current_angle = 0.0
         if self.init_class:
-            del self.init_class
-            self.init_window.destroy()
             if single == 0:
-                self.initialize("length")
+                self.init_class.init_canvas.itemconfigure(self.init_class.init_text, text="Anschlag auf Nullstellung fahren und mit Enter bestätigen")
+                self.init_class.init_button_1["command"] = self.reset_length 
+            else:
+                self.window.lift()
+                del self.init_class
+                self.init_window.destroy()
+
 
     def reset_length(self):
         print("reset length")
         self.len_enc.counter = 0
-        self.fl_current_length = self.stop_offset
+        self.fl_current_length = 0
         self.display_current_length()
         if self.init_class:
             del self.init_class
@@ -647,11 +652,13 @@ class GUI():
 
     def initialize(self,mode,single=0):
         self.init_window = Toplevel(self.window)
+        self.init_window.attributes("-fullscreen", True) 
         self.init_class = INIT(self.init_window,self,mode,single)
 
     def close_settings(self):
-        del self.sett_class
-        self.sett_window.destroy()
+        if self.sett_class:
+            del self.sett_class
+            self.sett_window.destroy()
         
 class SETTINGS():
     def __init__(self,sett_window,gui) -> None:
@@ -709,20 +716,20 @@ class SETTINGS():
             height=100.0
         )
 
-        self.reset_finished_image = PhotoImage(
-            file=relative_to_assets("button_finished.png"))
+        self.button_finished_image = PhotoImage(
+            file=relative_to_assets("button_finish.png"))
         
-        self.reset_finished = Button(
+        self.button_finished = Button(
             self.sett_window,
-            image=self.reset_image_2,
+            image=self.button_finished_image,
             borderwidth=0,
             highlightthickness=0,
             command=lambda: gui.close_settings(),
             relief="flat"
         )
-        self.reset_finished.place(
+        self.button_finished.place(
             x=720.0,
-            y=200.0,
+            y=500.0,
             width=380.0,
             height=100.0
         )
@@ -801,7 +808,7 @@ class INIT():
 # -------------------- Start Mainloop --------------------
 if __name__ == "__main__":
     window = Tk()
-    # window.attributes("-fullscreen", True) 
+    window.attributes("-fullscreen", True) 
     window.geometry("1280x800")
     window.configure(bg = "#FFFFFF")
     window.resizable(True, True)
