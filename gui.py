@@ -636,7 +636,6 @@ class GUI():
                 self.init_class.init_canvas.itemconfigure(self.init_class.init_text, text="Anschlag auf Nullstellung fahren und mit Enter bestätigen")
                 self.init_class.init_button_1["command"] = self.reset_length 
             else:
-                self.window.lift()
                 del self.init_class
                 self.init_window.destroy()
 
