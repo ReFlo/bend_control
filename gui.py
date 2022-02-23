@@ -47,6 +47,7 @@ class GUI():
         self.window = parent    
         self.run_bending = True
         self.running = True
+        self.start_sett = ''
 
         #--------- get config data--------------
         self.config.read(CONFIG)
@@ -147,6 +148,7 @@ class GUI():
             highlightthickness=0,
             command=lambda: self.change_stop_offset(4),
             relief="flat",
+            activebackground="red" 
         )
         self.button_3.place(
             x=644.0,
@@ -165,6 +167,7 @@ class GUI():
             highlightthickness=0,
             command=lambda: self.change_stop_offset(3),
             relief="flat",
+            activebackground="red"            
 
         )
         self.button_4.place(
@@ -183,7 +186,8 @@ class GUI():
             borderwidth=0,
             highlightthickness=0,
             command=lambda: self.change_stop_offset(2),
-            relief="flat"
+            relief="flat",
+            activebackground="red" 
         )
         self.button_5.place(
             x=284.0,
@@ -200,7 +204,8 @@ class GUI():
             borderwidth=0,
             highlightthickness=0,
             command=lambda: self.change_stop_offset(1),
-            relief="flat"
+            relief="flat",
+            activebackground="red" 
         )
         self.button_6.place(
             x=114.0,
@@ -500,12 +505,18 @@ class GUI():
     def add_digit_to_angle(self, value):
 
         if value == 'C':
+            self.start_sett = self.start_sett + value
+            if self.start_sett =='CCCCC':
+                self.start_sett=''
+                self.open_settings()
+                return
             self.str_angle = str()
             self.canvas.itemconfig(self.set_angle, text=''.join([self.str_angle,'°']))
             self.button_7['state']='disable'
             return
 
         if value == 'Enter':
+            self.prev_ins = ""
             self.setting_angle(self.str_angle)
             self.str_angle = str()
             self.button_7['state']='disable'
@@ -514,6 +525,7 @@ class GUI():
         self.str_angle = self.str_angle + value
         self.canvas.itemconfig(self.set_angle, text=''.join([self.str_angle,'°']))
         self.button_7['state']='normal'
+        self.start_sett = ''
 
     def setting_angle(self, angle):
         try:
@@ -534,7 +546,7 @@ class GUI():
         self.button_4["bg"]="white"
         self.button_5["bg"]="white"
         self.button_6["bg"]="white"
-        button["bg"]="grey"
+        button["bg"]="red"
         return
 
     def change_stop_offset(self, value):
@@ -807,7 +819,7 @@ class INIT():
 # -------------------- Start Mainloop --------------------
 if __name__ == "__main__":
     window = Tk()
-    window.attributes("-fullscreen", True) 
+    # window.attributes("-fullscreen", True) 
     window.geometry("1280x800")
     window.configure(bg = "#FFFFFF")
     window.resizable(True, True)
