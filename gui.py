@@ -8,6 +8,7 @@ import threading
 import queue
 import time
 from pathlib import Path
+from numpy import False_
 from pigpio_encoder.rotary import Rotary
 import pigpio
 
@@ -45,7 +46,7 @@ class GUI():
         self.fl_current_length = float()
         self.config = configparser.ConfigParser()
         self.window = parent    
-        self.run_bending = True
+        self.run_bending = False
         self.running = True
         self.start_sett = ''
 
@@ -57,10 +58,10 @@ class GUI():
         self.offset_1 = float(self.config['DEFAULT']['offset_1'])
         self.offset_2 = float(self.config['DEFAULT']['offset_2'])
         self.offset_3 = float(self.config['DEFAULT']['offset_3'])
+        self.max_angle = float(self.config['DEFAULT']['max_angle'])
         #---------------initialize Encoder -----------------
         self.enc = Rotary(clk_gpio=15, dt_gpio=18, sw_gpio=14)
         self.enc.setup_rotary(rotary_callback=self.get_angle, max=16000, debounce=10)
-
        
         #--------------initialize Lenghtsystem for stop ------------
         self.len_enc = Rotary(clk_gpio=13, dt_gpio=19, sw_gpio=26)
@@ -74,10 +75,10 @@ class GUI():
         #--------------- Remote Pins pigpio ---------------------
         self.pi.set_mode( PIN_REMOTE_START, pigpio.INPUT)  # GPIO  23 as input
         self.pi.set_pull_up_down(PIN_REMOTE_START, pigpio.PUD_UP)
-        self.pi.callback(PIN_REMOTE_START, pigpio.FALLING_EDGE, lambda: self.start_bending)
-        self.pi.set_mode( PIN_REMOTE_STOP, pigpio.INPUT)  # GPIO  23 as input
+        self.pi.callback(PIN_REMOTE_START, pigpio.FALLING_EDGE, self.start_bending)
+        self.pi.set_mode(PIN_REMOTE_STOP, pigpio.INPUT)  # GPIO  23 as input
         self.pi.set_pull_up_down(PIN_REMOTE_STOP, pigpio.PUD_UP)
-        self.pi.callback(PIN_REMOTE_START, pigpio.FALLING_EDGE, lambda: self.stop_bending)
+        self.pi.callback(PIN_REMOTE_STOP, pigpio.FALLING_EDGE, self.stop_bending)
 
         #--------------- create GUI items ------------------
         self.create_gui()
@@ -517,9 +518,10 @@ class GUI():
 
         if value == 'Enter':
             self.prev_ins = ""
-            self.setting_angle(self.str_angle)
-            self.str_angle = str()
-            self.button_7['state']='disable'
+            if float(self.str_angle) <= self.max_angle:
+                self.setting_angle(self.str_angle)
+                self.str_angle = str()
+                self.button_7['state']='disable'
             return
 
         self.str_angle = self.str_angle + value
@@ -571,17 +573,23 @@ class GUI():
         return
     
     def display_current_angle(self):
-            self.canvas.itemconfigure(self.current_angle, text=''.join([f'{self.current_angle:.1f}',"°"]))
+            self.canvas.itemconfigure(self.current_angle, text=''.join([f'{self.fl_current_angle:.1f}',"°"]))
     
     def display_current_length(self):
         self.canvas.itemconfig(self.current_length, text=str(self.fl_current_length+ self.stop_offset))
   
-    def start_bending(self, channel=0):
-        self.run_bending = True
-        self.button_2['state'] = 'disabled'
-        self.button_1['state'] = 'normal'
-        threading.Thread(target=self.bend,args=[self.fl_set_angle]).start()
+    def start_bending(self,gpio=0, level=0, tick=0):
+        print("start bending")
+        if self.run_bending==False:
+            self.run_bending = True
+            self.button_2['state'] = 'disabled'
+            self.button_1['state'] = 'normal'
+            threading.Thread(target=self.bend,args=[self.fl_set_angle]).start()
         return
+
+    def print_callback(self, a, n ,c):
+        print(f"callback {c}")
+
 
     def bend(self, set_angle):
         while self.run_bending == True :
@@ -604,16 +612,17 @@ class GUI():
         self.button_2["state"] = "normal"
         return
 
-    def stop_bending(self, channel=0):
-        self.run_bending = False
-        self.pi.write(PIN_UP, 0)
-        self.pi.write(PIN_DOWN, 0)
-        print("Bending is stopped")
-        self.button_1['state'] = 'disabled'
-        self.button_2['state'] = 'normal'
+    def stop_bending(self, gpio=0, level=0, tick=0):
+        if self.run_bending == True:
+            self.run_bending = False
+            self.pi.write(PIN_UP, 0)
+            self.pi.write(PIN_DOWN, 0)
+            print("Bending is stopped")
+            self.button_1['state'] = 'disabled'
+            self.button_2['state'] = 'normal'
 
     def get_angle(self, angle):
-        self.fl_current_angle = angle/10
+        self.fl_current_angle = angle/50
         # self.config.set('DEFAULT','angle', str(int(angle)))
         # self.config.write(self.file)
         self.display_current_angle()
