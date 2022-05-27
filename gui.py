@@ -61,11 +61,11 @@ class GUI():
         self.max_angle = float(self.config['DEFAULT']['max_angle'])
         #---------------initialize Encoder -----------------
         self.enc = Rotary(clk_gpio=15, dt_gpio=18, sw_gpio=14)
-        self.enc.setup_rotary(rotary_callback=self.get_angle, max=16000, debounce=10)
+        self.enc.setup_rotary(rotary_callback=self.get_angle, max=16000, debounce=5)
        
         #--------------initialize Lenghtsystem for stop ------------
         self.len_enc = Rotary(clk_gpio=13, dt_gpio=19, sw_gpio=26)
-        self.len_enc.setup_rotary(rotary_callback=self.get_length, max=300000, debounce=10)
+        self.len_enc.setup_rotary(rotary_callback=self.get_length, max=300000, debounce=5)
 
         #--------------- initialize Relay Pings
         self.pi = pigpio.pi()
@@ -601,15 +601,19 @@ class GUI():
                     # print(self.fl_current_angle)
             self.pi.write(PIN_UP, 0)
 
-            while(self.fl_current_angle > 0 and self.run_bending==True):
+            time.sleep(1)
+
+            while(self.fl_current_angle > 1.0 and self.run_bending==True):
                     # print("Moving down")
                     self.pi.write(PIN_DOWN, 1)
                     time.sleep(0.0001)
             self.pi.write(PIN_DOWN, 0)
             self.run_bending = False
             self.button_2["state"] = "normal"
+            self.button_1['state'] = 'disabled'
             return
         self.button_2["state"] = "normal"
+        self.button_1['state'] = 'disabled'
         return
 
     def stop_bending(self, gpio=0, level=0, tick=0):
@@ -622,13 +626,13 @@ class GUI():
             self.button_2['state'] = 'normal'
 
     def get_angle(self, angle):
-        self.fl_current_angle = angle/50
+        self.fl_current_angle = angle/10
         # self.config.set('DEFAULT','angle', str(int(angle)))
         # self.config.write(self.file)
         self.display_current_angle()
 
     def get_length(self, length):
-        self.fl_current_length = length/10
+        self.fl_current_length = length/20
         # self.config.set('DEFAULT','length', str(int(length)))
         # self.config.write(self.file)
         self.canvas.itemconfigure(self.current_length, text=f'{self.fl_current_length + self.stop_offset:.1f}')
@@ -828,7 +832,7 @@ class INIT():
 # -------------------- Start Mainloop --------------------
 if __name__ == "__main__":
     window = Tk()
-    # window.attributes("-fullscreen", True) 
+    window.attributes("-fullscreen", True) 
     window.geometry("1280x800")
     window.configure(bg = "#FFFFFF")
     window.resizable(True, True)
