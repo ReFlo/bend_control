@@ -59,6 +59,10 @@ class GUI():
         self.offset_2 = float(self.config['DEFAULT']['offset_2'])
         self.offset_3 = float(self.config['DEFAULT']['offset_3'])
         self.max_angle = float(self.config['DEFAULT']['max_angle'])
+
+        #--------------- create GUI items ------------------
+        self.create_gui()
+
         #---------------initialize Encoder -----------------
         self.enc = Rotary(clk_gpio=15, dt_gpio=18, sw_gpio=14)
         self.enc.setup_rotary(rotary_callback=self.get_angle,min=-3000, max=16000, debounce=1)
@@ -80,8 +84,7 @@ class GUI():
         self.pi.set_pull_up_down(PIN_REMOTE_STOP, pigpio.PUD_UP)
         self.pi.callback(PIN_REMOTE_STOP, pigpio.FALLING_EDGE, self.stop_bending)
 
-        #--------------- create GUI items ------------------
-        self.create_gui()
+
 
         ########## Update displays #########
         self.change_stop_offset(int(self.config['DEFAULT']['stop_offset']))
@@ -573,7 +576,7 @@ class GUI():
         return
     
     def display_current_angle(self):
-            self.canvas.itemconfigure(self.current_angle, text=''.join([f'{self.fl_current_angle:.1f}',"°"]))
+        self.canvas.itemconfigure(self.current_angle, text=''.join([f'{self.fl_current_angle:.1f}',"°"]))
     
     def display_current_length(self):
         self.canvas.itemconfig(self.current_length, text=str(self.fl_current_length+ self.stop_offset))
@@ -594,7 +597,7 @@ class GUI():
     def bend(self, set_angle):
         while self.run_bending == True :
 
-            while(self.fl_current_angle < set_angle and self.run_bending==True):
+            while(self.fl_current_angle < (set_angle-0.9) and self.run_bending==True):
                     # print("Moving up")
                     self.pi.write(PIN_UP, 1)
                     time.sleep(0.00001)
