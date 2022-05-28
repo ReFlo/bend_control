@@ -61,11 +61,11 @@ class GUI():
         self.max_angle = float(self.config['DEFAULT']['max_angle'])
         #---------------initialize Encoder -----------------
         self.enc = Rotary(clk_gpio=15, dt_gpio=18, sw_gpio=14)
-        self.enc.setup_rotary(rotary_callback=self.get_angle, max=16000, debounce=5)
+        self.enc.setup_rotary(rotary_callback=self.get_angle,min=-3000, max=16000, debounce=1)
        
         #--------------initialize Lenghtsystem for stop ------------
         self.len_enc = Rotary(clk_gpio=13, dt_gpio=19, sw_gpio=26)
-        self.len_enc.setup_rotary(rotary_callback=self.get_length, max=300000, debounce=5)
+        self.len_enc.setup_rotary(rotary_callback=self.get_length, max=300000, debounce=1)
 
         #--------------- initialize Relay Pings
         self.pi = pigpio.pi()
@@ -597,7 +597,7 @@ class GUI():
             while(self.fl_current_angle < set_angle and self.run_bending==True):
                     # print("Moving up")
                     self.pi.write(PIN_UP, 1)
-                    time.sleep(0.0001)
+                    time.sleep(0.00001)
                     # print(self.fl_current_angle)
             self.pi.write(PIN_UP, 0)
 
@@ -606,7 +606,7 @@ class GUI():
             while(self.fl_current_angle > 1.0 and self.run_bending==True):
                     # print("Moving down")
                     self.pi.write(PIN_DOWN, 1)
-                    time.sleep(0.0001)
+                    time.sleep(0.00001)
             self.pi.write(PIN_DOWN, 0)
             self.run_bending = False
             self.button_2["state"] = "normal"
