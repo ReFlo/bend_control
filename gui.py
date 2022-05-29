@@ -75,7 +75,8 @@ class GUI():
         self.pi = pigpio.pi()
         self.pi.set_mode(PIN_UP, pigpio.OUTPUT)
         self.pi.set_mode(PIN_DOWN, pigpio.OUTPUT)
-
+        self.pi.set_glitch_filter(PIN_REMOTE_START,300)
+        self.pi.set_glitch_filter(PIN_REMOTE_STOP,100)
         #--------------- Remote Pins pigpio ---------------------
         self.pi.set_mode( PIN_REMOTE_START, pigpio.INPUT)  # GPIO  23 as input
         self.pi.set_pull_up_down(PIN_REMOTE_START, pigpio.PUD_UP)
@@ -576,7 +577,10 @@ class GUI():
         return
     
     def display_current_angle(self):
-        self.canvas.itemconfigure(self.current_angle, text=''.join([f'{self.fl_current_angle:.1f}',"°"]))
+        if self.fl_current_angle>=0:
+            self.canvas.itemconfigure(self.current_angle, text=''.join([f'{self.fl_current_angle:.1f}',"°"]))
+        else:
+            self.canvas.itemconfigure(self.current_angle, text=''.join(['0.0',"°"]))
     
     def display_current_length(self):
         self.canvas.itemconfig(self.current_length, text=str(self.fl_current_length+ self.stop_offset))
@@ -835,7 +839,7 @@ class INIT():
 # -------------------- Start Mainloop --------------------
 if __name__ == "__main__":
     window = Tk()
-    window.attributes("-fullscreen", True) 
+    # window.attributes("-fullscreen", True) 
     window.geometry("1280x800")
     window.configure(bg = "#FFFFFF")
     window.resizable(True, True)
