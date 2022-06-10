@@ -1,5 +1,3 @@
-# bend_control
-
 The Bend Control project
 =======================
 ![GUI](https://user-images.githubusercontent.com/74402649/173091997-91704721-b7f8-4ba4-814e-5833e5d7094b.png)
