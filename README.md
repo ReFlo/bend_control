@@ -2,12 +2,23 @@
 
 The Bend Control project
 =======================
+![GUI](https://user-images.githubusercontent.com/74402649/173091997-91704721-b7f8-4ba4-814e-5833e5d7094b.png)
 
-Deutsch:
-Mithilfe dieser Software wird eine Schwenkbiegemaschine gesteuert. Dabei können verschiedene Anschläge ausgewählt und ein Sollwinkel definiert werden. Als Basis dient ein Raspberry Pie, an welchen für Winkel und Anschlag ein Drehgeber angeschlossen ist. Die Offsets der Anschläge können in der Datei Setting.ini geändert werden. In der Datei kann außerdem der maximale Winkel, welcher gebogen werden soll, angepasst werden.
+Ziel dieses Projektes ist es eine einfache Steuerung für eine Schwenkbiegemaschine bereit zu stellen. Der Benutzer kann auf der Benutzeroberfläche einen Winkel einstellen und dieser wird mit dem Betätigen des Startbutton angefahren. Außerdem kann der Biegevorgang auch mit einer Fernbedienung gestartet beziehungsweise gestoppt werden.
 
+Als Basis dient ein Raspberry Pi 3B+, an welchen für Winkel und Anschlag ein Drehgeber (Rotary Encoder) angeschlossen ist. Die Maschine wird über eine Relaiskarte, welche am Raspberry Pi angeschlossen ist gesteuert.
 
-English:
-With the help of this software, a swivel bending machine is controlled via a user interface. Different stops can be selected and a target angle can be defined. A Raspberry Pie serves as the basis, to which a rotary encoder is connected for angle and stop. The offsets of the stops can be changed in the file Setting.ini. The maximum angle that is to be bent can also be adjusted in the file.
+![Blockschaltbild](https://user-images.githubusercontent.com/74402649/173093690-f0c3f352-85b0-4417-9725-6c1419003c65.png)
+
+Da die Maschine eine zusätzliche Erweiterung des Blechanschlages erhalten hat, können 4 verschiedene Anschläge ausgewählt werden. Die Positionen der Anschläge sind in den folgenden Darstellung zu sehen.
+
+![Anschlagsübersicht](https://user-images.githubusercontent.com/74402649/173094121-9cffd107-f323-4961-802a-e0d004216b90.png)
+
+In der Datei Setting.ini können die Offsets der einzelnen Anschläge und der maximale Winkel geändert werden. Zusätzlich wird der letzte eingespeicherte Soll-Winkel abgespeichtert.
+
+In dem folgenden Link ist das Projekt dokumentiert und die Benutzung der Software erklärt:
 
 Youtube:
+
+
+
