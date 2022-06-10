@@ -1,8 +1,8 @@
 The Bend Control project
 =======================
-![GUI](https://user-images.githubusercontent.com/74402649/173091997-91704721-b7f8-4ba4-814e-5833e5d7094b.png)
-
 Ziel dieses Projektes ist es eine einfache Steuerung für eine Schwenkbiegemaschine bereit zu stellen. Der Benutzer kann auf der Benutzeroberfläche einen Winkel einstellen und dieser wird mit dem Betätigen des Startbutton angefahren. Außerdem kann der Biegevorgang auch mit einer Fernbedienung gestartet beziehungsweise gestoppt werden.
+
+![GUI](https://user-images.githubusercontent.com/74402649/173091997-91704721-b7f8-4ba4-814e-5833e5d7094b.png)
 
 Als Basis dient ein Raspberry Pi 3B+, an welchen für Winkel und Anschlag ein Drehgeber (Rotary Encoder) angeschlossen ist. Die Maschine wird über eine Relaiskarte, welche am Raspberry Pi angeschlossen ist gesteuert.
 
