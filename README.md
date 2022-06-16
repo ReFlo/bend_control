@@ -1,4 +1,4 @@
-The Bend Control project
+Schwenkbiegesteuerung
 =======================
 Ziel dieses Projektes ist es eine einfache Steuerung für eine Schwenkbiegemaschine bereit zu stellen. Der Benutzer kann auf der Benutzeroberfläche einen Winkel einstellen und dieser wird mit dem Betätigen des Startbutton angefahren. Außerdem kann der Biegevorgang auch mit einer Fernbedienung gestartet beziehungsweise gestoppt werden.
 
