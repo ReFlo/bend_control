@@ -17,8 +17,6 @@ In der Datei Setting.ini können die Offsets der einzelnen Anschläge und der ma
 In dem folgenden Link ist das Projekt dokumentiert und die Benutzung der Software erklärt:
 
 Youtube:
-
-https://youtu.be/pvzcRDbaeUE
-
+https://youtu.be/NAJ_HeRE2GU
 
 
